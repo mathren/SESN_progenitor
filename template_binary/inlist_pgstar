@@ -2,7 +2,7 @@
 
 pgstar_interval = 10
 !pause = .true.
-Grid2_win_flag = .true.
+Grid2_win_flag = .false.
 
 Grid2_file_flag = .true.
 Grid2_file_dir = 'png'
