@@ -384,8 +384,8 @@ contains
     names(8) = 'envelope_binding_energy'
     vals(8) = total_env_binding_E
 
-!    names(9) = 'total_moment_of_inertia'
-!    MoI = 0.0d0
+   names(9) = 'total_moment_of_inertia'
+   MoI = 0.0d0
 !    if(.not.s% rotation_flag)then
 !       do i=s% nz, 2, -1
 !          MoI = MoI + 0.4d0*s% dm_bar(i)*(pow5(s% r(i)) - pow5(s% r(i-1)) )/(pow3(s% r(i)) - pow3(s% r(i-1)))
