@@ -384,8 +384,8 @@ contains
     names(8) = 'envelope_binding_energy'
     vals(8) = total_env_binding_E
 
-!    names(9) = 'total_moment_of_inertia'
-!    MoI = 0.0d0
+   names(9) = 'total_moment_of_inertia'
+   MoI = 0.0d0
 !    if(.not.s% rotation_flag)then
 !       do i=s% nz, 2, -1
 !          MoI = MoI + 0.4d0*s% dm_bar(i)*(pow5(s% r(i)) - pow5(s% r(i-1)) )/(pow3(s% r(i)) - pow3(s% r(i-1)))
@@ -890,10 +890,10 @@ contains
     !if ((s% center_h1 < TAMS_h1_treshold) .and. (s% center_he4 < 5.0d-2) .and. (s% center_c12 < 5.0d-2)) then
     if(s% x_logical_ctrl(2)) then !check for central carbon depletion, only in case we run single stars.
        s% max_model_number = 9900000 ! increase this
-       if ((s% center_h1 < TAMS_h1_treshold) .and. (s% center_he4 < 1.0d-4) .and. (s% center_c12 < 2.0d-2)) then
-          write(*,'(g0)') "Single star depleted carbon, terminating from run_star_extras"
-          extras_finish_step = terminate
-       endif
+       ! if ((s% center_h1 < TAMS_h1_treshold) .and. (s% center_he4 < 1.0d-4) .and. (s% center_c12 < 2.0d-2)) then
+       !    write(*,'(g0)') "Single star depleted carbon, terminating from run_star_extras"
+       !    extras_finish_step = terminate
+       ! endif
        ! if ((s% center_h1 < TAMS_h1_treshold) .and. (s% center_he4 < 1.0d-4) .and. ((s% surface_he4 > 0.3) .or. (s% surface_c12 > 0.1))) then
        !    write(*,'(g0)') "Single star became WR and has depleted He"
        !    extras_finish_step = terminate

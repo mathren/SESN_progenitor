@@ -458,22 +458,22 @@ contains
     end if
 
     ! check for termination due to carbon depletion
-    if (b% point_mass_i /= 1) then
-       if (b% s1% center_c12 < 1.0d-2 .and. b% s1% center_he4 < 1.0d-6) then
-          write(*,'(g0)') "termination code: Primary has depleted central carbon"
-          extras_binary_finish_step = terminate
-          return
-       end if
-    end if
+    ! if (b% point_mass_i /= 1) then
+    !    if (b% s1% center_c12 < 1.0d-2 .and. b% s1% center_he4 < 1.0d-6) then
+    !       write(*,'(g0)') "termination code: Primary has depleted central carbon"
+    !       extras_binary_finish_step = terminate
+    !       return
+    !    end if
+    ! end if
 
     ! check for termination due to carbon depletion
-    if (b% point_mass_i /= 2) then
-       if (b% s2% center_c12 < 1.0d-2 .and. b% s2% center_he4 < 1.0d-6) then
-          write(*,'(g0)') "termination code: Secondary has depleted central carbon"
-          extras_binary_finish_step = terminate
-          return
-       end if
-    end if
+    ! if (b% point_mass_i /= 2) then
+    !    if (b% s2% center_c12 < 1.0d-2 .and. b% s2% center_he4 < 1.0d-6) then
+    !       write(*,'(g0)') "termination code: Secondary has depleted central carbon"
+    !       extras_binary_finish_step = terminate
+    !       return
+    !    end if
+    ! end if
 
     ! check for L2 overflow after ZAMS, but before TAMS
     if(.not. b% ignore_rlof_flag .and. extras_binary_finish_step /= terminate .and. (b% point_mass_i == 0)) then ! only when we evolve both stars in MS

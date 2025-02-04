@@ -11,3 +11,5 @@ LOGS2/*
 star
 binary
 photos/*
+*.txt
+.restart
