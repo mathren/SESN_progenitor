@@ -9,10 +9,14 @@ later by [[https://github.com/neevshah101][@neevshah101]].
 This setup uses [[https://github.com/MESAHub/mesa-contrib][MESA-contrib]], specifically the =detach-binary= hook to
 "break" the binary post-RLOF and avoid second phases of mass transfer.
 
+
+** Notes
+
+This model takes \sim5000 steps to reach carbon depletion with MESA =r24.08.1=.
+
 ** TODO
 
 - [ ] test it reaches onset of core-collapse with MESA =r24.08.1=
-  (ongoing)
 - [ ] check CPUh cost
 - [ ] save post-RLOF model (should already be done out of the box) as
   re-starting point
