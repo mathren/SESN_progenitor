@@ -80,12 +80,7 @@ contains
     call star_ptr(id, s, ierr)
     if (ierr /= 0) return
 
-    ! Override low-mass wind
-    if (s% star_mass <= 8.0d0) s% cool_wind_RGB_scheme ='Reimers'
-
-    ! ! overshooting -- check inlists
-    !s% overshoot_f(1) = f_ov_fcn_of_mass(s% initial_mass)
-    !s% overshoot_f0(1) = 8.0d-3
+    s% lxtra(11) = .true. ! do we still need to read inlist_to_CC?
 
   end subroutine extras_startup
 
@@ -254,25 +249,16 @@ contains
   ! note: cannot request retry or backup; extras_check_model can do that.
   integer function extras_finish_step(id)
     integer, intent(in) :: id
-    integer :: ierr, i
-    real(dp) :: envelope_mass_fraction, L_He, L_tot, min_center_h1_for_diff, &
-         critmass, feh, rot_full_off, rot_full_on, frac2, TAMS_h1_treshold
-    real(dp), parameter :: huge_dt_limit = 3.15d16 ! ~1 Gyr
-    real(dp), parameter :: new_varcontrol_target = 1d-3
-    real(dp), parameter :: Zsol = 0.0142_dp
-    logical :: diff_test1, diff_test2, diff_test3, is_ne_biggest
-    character (len=strlen) :: photoname, fname
+    integer :: ierr
     type (star_info), pointer :: s
     ierr = 0
     call star_ptr(id, s, ierr)
     if (ierr /= 0) return
     extras_finish_step = keep_going
 
-    TAMS_h1_treshold = 1d-2
-
-    if ((s% center_h1 < TAMS_h1_treshold) .and. (s% center_he4 < 1.0d-4) .and. (s% center_c12 < 2.0d-2)) then
-       print *,  "*** Single star depleted carbon ***"
-       if(s% x_logical_ctrl(1)) then !check for central carbon depletion, only in case we run single stars.
+    if ((s% center_h1 < 1.0d-2) .and. (s% center_he4 < 1.0d-4) .and. (s% center_c12 < 2.0d-2)) then
+       if(s% x_logical_ctrl(1) .and. s% lxtra(11)) then !check for central carbon depletion, only in case we run single stars.
+          print *,  "*** Single star depleted carbon ***"
           print *, "read inlist_to_CC"
           call read_star_job(s, "inlist_to_CC", ierr)
           if (ierr /= 0) then
@@ -286,8 +272,9 @@ contains
              return
           end if
           print *, "read controls from inlist_to_CC"
-          s% x_logical_ctrl(1) = .false. ! avoid re-entering here
-       else ! stop at C depl
+          s% lxtra(11) = .false. ! avoid re-entering here
+       else if (.not. s% x_logical_ctrl(1)) then ! stop
+          print *,  "*** Single star depleted carbon ***"
           extras_finish_step = terminate
        end if
     end if
@@ -304,8 +291,4 @@ contains
     call star_ptr(id, s, ierr)
     if (ierr /= 0) return
   end subroutine extras_after_evolve
-
-
-  !include 'POSYDON_single_stars.inc'
-
 end module run_star_extras

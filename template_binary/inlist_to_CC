@@ -1,0 +1,11 @@
+&star_job
+change_v_flag = .true.
+new_v_flag = .true.
+/
+
+&controls
+max_model_number = 25000
+! when to stop
+fe_core_infall_limit = 1d8
+fe_core_infall_mass = 0.95d0
+/
