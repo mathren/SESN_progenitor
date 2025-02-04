@@ -63,12 +63,6 @@ contains
     ! Once you have set the function pointers you want, then uncomment this (or set it in your star_job inlist)
     ! to disable the printed warning message,
     b% warn_binary_extra =.false.
-
-    ! POSYDON stuff
-    !b% other_sync_spin_to_orbit => POSYDON_sync_spin_to_orbit
-    !b% other_tsync => POSYDON_tsync
-    ! b% other_mdot_edd => POSYDON_mdot_edd
-
   end subroutine extras_binary_controls
 
   integer function how_many_extra_binary_history_header_items(binary_id)
@@ -97,7 +91,7 @@ contains
   integer function how_many_extra_binary_history_columns(binary_id)
     use binary_def, only: binary_info
     integer, intent(in) :: binary_id
-    how_many_extra_binary_history_columns = 6
+    how_many_extra_binary_history_columns = 0
   end function how_many_extra_binary_history_columns
 
 
@@ -108,55 +102,11 @@ contains
     character (len=maxlen_binary_history_column_name) :: names(n)
     real(dp) :: vals(n)
     integer, intent(out) :: ierr
-    integer:: i_don, i_acc
-    real(dp) :: beta, trap_rad, mdot_edd, accretor_radius, mdot_edd_eta
     ierr = 0
     call binary_ptr(binary_id, b, ierr)
     if (ierr /= 0) then
        write(*,*) 'failed in binary_ptr'
        return
-    end if
-
-    ! this is untested by Mathieu
-    !call POSYDON_mdot_edd(binary_id,mdot_edd,mdot_edd_eta,ierr)
-
-    !if (b% point_mass_i == 0) then ! if there is no compact object then trappping radius is 0
-    !   trap_rad = 0.0_dp
-    !   accretor_radius = 0.0_dp
-    !else ! Begelman 1997 and King & Begelman 1999 eq. 1: accretor is star 2
-    !   trap_rad = 0.5_dp*abs(b% mtransfer_rate) * acc_radius(b, b% m(2)) / mdot_edd
-    !   accretor_radius = acc_radius(b, b% m(2))
-    !end if
-
-    names(1) = 'trap_radius'
-    vals(1) = trap_rad/Rsun ! in Rsun units
-    names(2) = 'acc_radius'
-    vals(2) = accretor_radius ! in cm units
-
-    !if (b% point_mass_i /= 1) then
-    !   moment_of_inertia = dot_product(s% i_rot(:s% nz), s% dm_bar(:s%nz))
-    !   rGyr_squared = (moment_of_inertia/(m*r_phot*r_phot))
-    !   t_sync_rad_1 = 3.0*k_div_T_posydon(b, s, .false.)*(qratio*qratio/rGyr_squared)*pow6(r_phot/osep)
-    !   t_sync_conv_1 = 3.0*k_div_T_posydon(b, s, .true.)*(qratio*qratio/rGyr_squared)*pow6(r_phot/osep)
-    !else
-    !   t_sync_rad_1 = nan
-    names(3) = 't_sync_rad_1'
-    names(4) = 't_sync_conv_1'
-    names(5) = 't_sync_rad_2'
-    names(6) = 't_sync_conv_2'
-    if (b% point_mass_i /= 1) then
-       vals(3) = b% s1% xtra(3)
-       vals(4) = b% s1% xtra(2)
-    else
-       vals(3) = -1.0d0
-       vals(4) = -1.0d0
-    end if
-    if (b% point_mass_i /= 2) then
-       vals(5) = b% s2% xtra(3)
-       vals(6) = b% s2% xtra(2)
-    else
-       vals(5) = -1.0d0
-       vals(6) = -1.0d0
     end if
 
 
@@ -368,48 +318,12 @@ contains
        write(fname, fmt="(a18)") 'donor_postRLOF.mod'
        call star_write_model(b% star_ids(1), fname, ierr)
        if (ierr /= 0) return
-       write(fname, fmt="(a21)") 'accretor_postRLOF.mod'
-       call star_write_model(b% star_ids(2), fname, ierr)
-       b% lxtra(2) = .false. ! so we dont' get back in here
-       if (ierr /= 0) return
-       if (b% s_donor% x_logical_ctrl(1) .eqv. .true.) then
-          print *, "****************************************"
-          print *, "* Switching from binary to single star *"
-          print *, "****************************************"
-          b% job% evolve_both_stars = .false.
-          ! fix Eddington mdot stuff
-          b% eq_initial_bh_mass = b% s_donor% m(1)
-          b% mdot_edd = 1d99
-          b% mdot_edd_eta = 0d0
-          ! switch donor and accretor
-          b% d_i = 2
-          b% a_i = 1
-          ! switch pointers
-          b% s_donor => b% s2
-          b% s_accretor => b% s1
-          ! set point mass index
-          b% point_mass_i = 1
-          ! set the mass transfer
-          print *, "current mtransfer_rate", b% mtransfer_rate, "set to zero"
-          b% mtransfer_rate = 0d0
-          b% change_factor = b% max_change_factor
-          print *, "shutting down tides, accretion of J, magnetic braking, and missing wind"
-          b% do_tidal_sync = .false.
-          b% do_j_accretion = .false.
-          b% do_jdot_mb = .false.
-          b% do_jdot_missing_wind = .false.
-          print *, "ignore RLOF from now on"
-          b% ignore_rlof_flag = .true.
-          print *, "If this is a failed SN you can calculate the new e and P and set them here"
-          print *, "to avoid case BB, we set the period and separation to something very large"
-          call binary_set_separation_eccentricity(binary_id, 1d99, 0d0, ierr)
+       if (b% point_mass_i == 2) then
+          write(fname, fmt="(a21)") 'accretor_postRLOF.mod'
+          call star_write_model(b% star_ids(2), fname, ierr)
           if (ierr /= 0) return
-          b% ignore_hard_limits_this_step = .true.
-          print *, "----------------------------------------"
-          print *, "new period, separation, Jorb, and eccentricity"
-          print *, b% period, b% separation, b% angular_momentum_j, b% eccentricity
-          print *, "----------------------------------------"
        end if
+       b% lxtra(2) = .false. ! so we dont' get back in here
     end if
 
     ! find accretor TAMS if you are evolving it
@@ -423,8 +337,6 @@ contains
           b% lxtra(3) = .true.
        end if
     end if
-
-
 
 
     if (b% point_mass_i == 0) then
@@ -443,38 +355,6 @@ contains
        write(*,'(g0)') "termination code: Reached maximum mass transfer rate: 1d-1"
     end if
 
-    ! check trapping radius only for runs with a compact object
-    if (b% point_mass_i == 2) then
-    !   call POSYDON_mdot_edd(binary_id,mdot_edd,mdot_edd_eta, ierr)
-       ! Begelman 1997 and King & Begelman 1999 eq. 1: accretor is star 2
-    !   trap_rad = 0.5_dp*abs(b% mtransfer_rate) * acc_radius(b, b% m(2)) / mdot_edd
-
-       !check if mass transfer rate reached maximun, assume unstable regime if it happens
-       if (trap_rad >= b% rl(2)) then                                     !stop when trapping radius larger than rl(2)
-          !if (abs(b% mtransfer_rate/(Msun/secyer)) >= 1d-1) then            !stop when larger than 0.1 Msun/yr
-          extras_binary_finish_step = terminate
-          write(*,'(g0)') "termination code: Reached maximum mass transfer rate: Exceeded photon trapping radius"
-       end if
-    end if
-
-    ! check for termination due to carbon depletion
-    ! if (b% point_mass_i /= 1) then
-    !    if (b% s1% center_c12 < 1.0d-2 .and. b% s1% center_he4 < 1.0d-6) then
-    !       write(*,'(g0)') "termination code: Primary has depleted central carbon"
-    !       extras_binary_finish_step = terminate
-    !       return
-    !    end if
-    ! end if
-
-    ! check for termination due to carbon depletion
-    ! if (b% point_mass_i /= 2) then
-    !    if (b% s2% center_c12 < 1.0d-2 .and. b% s2% center_he4 < 1.0d-6) then
-    !       write(*,'(g0)') "termination code: Secondary has depleted central carbon"
-    !       extras_binary_finish_step = terminate
-    !       return
-    !    end if
-    ! end if
-
     ! check for L2 overflow after ZAMS, but before TAMS
     if(.not. b% ignore_rlof_flag .and. extras_binary_finish_step /= terminate .and. (b% point_mass_i == 0)) then ! only when we evolve both stars in MS
        if (b% s1% center_h1 > TAMS_h1_treshold .and. b% s2% center_h1 > TAMS_h1_treshold) then
@@ -491,20 +371,6 @@ contains
           end if
        end if
     end if
-
-    if (b% model_number == 1 ) then ! Saving initial_models
-       write(*,*) "saving initial models"
-       if (b% point_mass_i /= 1) then
-          call star_write_model(b% s1% id, "initial_star1.mod",  ierr)
-       end if
-       if (ierr /= 0) return ! failure
-       if (b% point_mass_i /= 2) then
-          call star_write_model(b% s2% id, "initial_star2.mod",  ierr)
-       end if
-       if (ierr /= 0) return ! failure
-    end if
-
-
   end function extras_binary_finish_step
 
   subroutine extras_binary_after_evolve(binary_id, ierr)
@@ -531,9 +397,5 @@ contains
        STOP "failed to save profile for star 2"
     end if
   end subroutine extras_binary_after_evolve
-
-  ! include 'POSYDON_mesa.inc'
-  ! note that POSYDON_binaries.inc recursevely includes POSYDON_single_stars.inc
-  !include 'POSYDON_binaries.inc'
 
 end module run_binary_extras
