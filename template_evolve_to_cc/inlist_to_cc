@@ -63,7 +63,7 @@ min_D_mix = 1d-2
 ! lower to 2.5d9 or worst case 1d9 for large networks to help with
 ! numerical stability and speed, see MESA VI (Jermyn 2023)
 op_split_burn = .true.
-op_split_burn_min_T = 1d9
+op_split_burn_min_T = 4d9
 burn_steps_limit = 150
 burn_steps_hard_limit = 250
 op_split_burn_eps = 1d-5
@@ -120,12 +120,12 @@ gradT_excess_f2 = 1d-2
 gradT_excess_lambda1 = -1d0 ! full on
 
 ! overshooting, values from Brott+11
-overshoot_scheme(1)                       = 'step'
+overshoot_scheme(1)                       = 'exponential'
 overshoot_zone_type(1)                    = 'any'
-overshoot_zone_loc(1)                     = 'core'
+overshoot_zone_loc(1)                     = 'any'
 overshoot_bdy_loc(1)                      = 'any'
-overshoot_f(1)                            = 0.345d0
-overshoot_f0(1)                           = 0.01d0
+overshoot_f(1)                            = 0.005d0
+overshoot_f0(1)                           = 0.001d0
 
 ! timesteps
 min_timestep_limit = 1d-20 !(seconds)
@@ -136,8 +136,8 @@ min_timestep_factor = 0.8d0
 max_timestep_factor = 1.05d0
 timestep_factor_for_retries = 0.75
 
-limit_for_rel_error_in_energy_conservation = -1!1d-7
-hard_limit_for_rel_error_in_energy_conservation = -1!1d-6
+limit_for_rel_error_in_energy_conservation = 1d2!1d-7
+hard_limit_for_rel_error_in_energy_conservation = 1d2!1d-6
 
 never_skip_hard_limits = .true
 min_xa_hard_limit = -1d-5
