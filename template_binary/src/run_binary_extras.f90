@@ -312,18 +312,18 @@ contains
     ! if RLOF ended detach and switch to single star evolutuon
     if ((b% lxtra(2) .eqv. .true.) .and. &   ! RLOF has started before
          (b% rl_relative_gap(1) < 0) .and. & ! donor is detached
-         (b% s1% r(1) <= min(b% xtra(4), b% xtra(1))) .and. &  ! donor smaller than R_roche_lobe at onset RLOF and R_TAMS
-         (b% job% evolve_both_stars .eqv. .true.)) then
-       print *, "save models after RLOF"
+         (b% s1% r(1) <= min(b% xtra(4), b% xtra(1)))) & ! donor smaller than R_roche_lobe at onset RLOF and R_TAMS
+         then
+       print *, "Save models after RLOF"
        write(fname, fmt="(a18)") 'donor_postRLOF.mod'
        call star_write_model(b% star_ids(1), fname, ierr)
        if (ierr /= 0) return
-       if (b% point_mass_i == 2) then
+       b% lxtra(2) = .false. ! so we dont' get back in here
+       if (b% job% evolve_both_stars .eqv. .true.) then
           write(fname, fmt="(a21)") 'accretor_postRLOF.mod'
           call star_write_model(b% star_ids(2), fname, ierr)
           if (ierr /= 0) return
        end if
-       b% lxtra(2) = .false. ! so we dont' get back in here
     end if
 
     ! find accretor TAMS if you are evolving it

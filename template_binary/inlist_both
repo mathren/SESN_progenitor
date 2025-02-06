@@ -1,35 +1,35 @@
 &star_job
 
-show_log_description_at_start = .false.
-show_timestep_limit_counts_when_terminate = .true.
-save_model_when_terminate = .false.
-load_saved_model = .false.
-! create_pre_main_sequence_model = .true.
+show_log_description_at_start                   = .false.
+show_timestep_limit_counts_when_terminate       = .true.
+save_model_when_terminate                       = .false.
+load_saved_model                                = .false.
+! create_pre_main_sequence_model                = .true.
 
-change_net = .true.
-change_initial_net = .true.
-new_net_name =  "approx21_plus_co56.net" ! "mesa_128.net"
+change_net                                      = .true.
+change_initial_net                              = .true.
+new_net_name                                    =  'approx21_cr60_plus_co56.net' !"approx21_plus_co56.net" ! "mesa_128.net"
 
-! change_rotation_flag = .true.
-! change_initial_rotation_flag = .true.
-! new_rotation_flag = .true.
+! change_rotation_flag                          = .true.
+! change_initial_rotation_flag                  = .true.
+! new_rotation_flag                             = .true.
 
-change_v_flag = .false.
-new_v_flag = .false.
+change_v_flag                                   = .false.
+new_v_flag                                      = .false.
 
-set_initial_age = .true.
-initial_age = 0
+set_initial_age                                 = .true.
+initial_age                                     = 0
 
-set_initial_model_number = .true.
-initial_model_number = 0
+set_initial_model_number                        = .true.
+initial_model_number                            = 0
 
-! set_omega_div_omega_crit = .true.
-! set_initial_omega_div_omega_crit = .true.
+! set_omega_div_omega_crit                      = .true.
+! set_initial_omega_div_omega_crit              = .true.
 ! value set in inlist_extra
 
-pgstar_flag = .true.
+pgstar_flag                                     = .true.
 
-change_initial_Z = .true.
+change_initial_Z                                = .true.
 ! value set in inlist_extra
 
 / ! end of star_job namelist
@@ -40,34 +40,48 @@ change_initial_Z = .true.
 
 
 &kap
-
-use_Type2_opacities = .true.
+kap_file_prefix                                 = 'gs98'    ! 'gs98' 'a09'  'OP_a09' 'OP_gs98'
+kap_CO_prefix                                   = 'gs98_co' ! 'gs98_co' 'a09_co'
+kap_lowT_prefix                                 = 'lowT_fa05_a09p'
+use_Type2_opacities                             = .true.
 ! Zbase set in inlist_extra
 /
 
 
 &controls
 
+Pextra_factor                                   = 2 ! easy to lower with mass loss!ideally 1.5 is most physical
+atm_option                                      = 'T_tau'
+atm_T_tau_relation                              = 'Eddington'
+atm_T_tau_opacity                               = 'fixed' ! next best is 'iterated'
+
+
 hard_limit_for_rel_error_in_energy_conservation = -1d0
-use_superad_reduction = .true.
+! use_superad_reduction                           = .true. ! need to try MLT++ for binary evolution part
+okay_to_reduce_gradT_excess = .true.
+gradT_excess_f1 = 1d-4
+gradT_excess_f2 = 1d-2
+gradT_excess_lambda1 = -1d0 ! full on
 
 ! to stop at C depletion
-x_logical_ctrl(2) = .true.
-max_model_number = 50000 ! if true above, and the binary detaches, this will be overwritten in run_star_extras.f90
-redo_limit = 300
+x_logical_ctrl(2)                               = .true.
+max_model_number                                = 50000 ! if true above, and the binary detaches, this will be overwritten in run_star_extras.f90
+redo_limit                                      = 300
 
 !wind
-hot_wind_scheme = 'Dutch'
-cool_wind_RGB_scheme = 'Dutch'
-cool_wind_AGB_scheme = 'Dutch'
-Dutch_scaling_factor = 1.0  ! this is LARGE
-mdot_omega_power = 0.43d0
+hot_wind_scheme                                 = 'Dutch'
+cool_wind_RGB_scheme                            = 'Dutch'
+cool_wind_AGB_scheme                            = 'Dutch'
+Dutch_scaling_factor                            = 1.0  ! this is LARGE
+mdot_omega_power                                = 0.43d0
 
 ! mixing
-use_ledoux_criterion = .true.
-mixing_length_alpha = 1.5d0
-alpha_semiconvection = 1.0d0 !1.0d0
-thermohaline_coeff = 1.0d0 !1.0d0
+MLT_option                                      = 'TDC'
+alpha_TDC_DAMPR                                 = 3d0 ! radiative dissipation !0d0 is default for mlt limit of TDC. 3 ~ henyey
+use_ledoux_criterion                            = .true.
+mixing_length_alpha                             = 1.5d0
+alpha_semiconvection                            = 1.0d0 !1.0d0
+thermohaline_coeff                              = 666.0d0 !1.0d0
 ! thermohaline_option = 'Brown_Garaud_Stellmach_13'
 
 ! overshoot controls
@@ -187,4 +201,18 @@ T_function2_param = 2.4d8
 ! Jim Fuller's suggestion
 set_min_D_mix = .true.
 min_D_mix=1d-2
+
+
+! split nuclear burning
+! Can be helpful to decrease op_split_burn_min_T
+! 4d9 has been well tested with the approx21 network
+! lower to 2.5d9 or worst case 1d9 for large networks to help with
+! numerical stability and speed, see MESA VI (Jermyn 2023)
+op_split_burn = .true.
+op_split_burn_min_T = 1d9
+burn_steps_limit = 150
+burn_steps_hard_limit = 250
+op_split_burn_eps = 1d-5
+op_split_burn_odescal = 1d-5
+
 / ! end of controls namelist

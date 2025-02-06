@@ -8,10 +8,20 @@ carbon core depletion and core-collapse.
 Originally developed for [[https://ui.adsabs.harvard.edu/abs/2021ApJ...923..277R/abstract][Renzo et al. 2021]], [[https://ui.adsabs.harvard.edu/abs/2023ApJ...942L..32R/abstract][2023]], ported to MESA
 =r24.03.1= or later by [[https://github.com/neevshah101][@neevshah101]].
 
+** Note on C depletion
+
+At carbon depletion ($X_{center}(^{12}C)_{} <0.01$) the =run_star_extras.f90=
+reads a =star_job= and =controls= from an whose path is *hard coded*, right
+now it's either [[./template_binary/inlist_to_cc][inlist_to_cc]] or [[./template_binary/inlist_to_cc_EB][inlist_to_cc_EB]].
+
+This allows to switch "on-the-fly" some options to make the star reach
+the onset of core collapse.
+
 ** TODO
 
 - [ ] test it reaches onset of core-collapse with MESA =r24.08.1=
 - [ ] check CPUh cost
 - [ ] save post-RLOF model (should already be done out of the box) as
   re-starting point
-- [ ] trim output for I/O speedup (ongoing)
+- [X] trim output
+- [ ] make =inlist_to_cc= an inlist-controllable variable

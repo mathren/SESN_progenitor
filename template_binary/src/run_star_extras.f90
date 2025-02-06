@@ -80,7 +80,7 @@ contains
     call star_ptr(id, s, ierr)
     if (ierr /= 0) return
 
-    s% lxtra(11) = .true. ! do we still need to read inlist_to_CC?
+    s% lxtra(1) = .true. ! do we still need to read inlist_to_CC?
 
   end subroutine extras_startup
 
@@ -251,31 +251,37 @@ contains
     integer, intent(in) :: id
     integer :: ierr
     type (star_info), pointer :: s
+    character (len=200) :: fname
     ierr = 0
     call star_ptr(id, s, ierr)
     if (ierr /= 0) return
     extras_finish_step = keep_going
 
-    if ((s% center_h1 < 1.0d-2) .and. (s% center_he4 < 1.0d-4) .and. (s% center_c12 < 2.0d-2)) then
-       if(s% x_logical_ctrl(1) .and. s% lxtra(11)) then !check for central carbon depletion, only in case we run single stars.
+    if ((s% center_h1 < 1.0d-2) .and. (s% center_he4 < 1.0d-4) .and. (s% center_c12 < 2.0d-2) &
+         .and. (s%lxtra(1))) then
+       print *, "Save model at C depl"
+       write(fname, fmt="(a15)") 'donor_Cdepl.mod' ! N.B.: if running both stars this will cause overwriting! fix by moving to run_binary_extras.f90
+       call star_write_model(s% id, fname, ierr)
+       if (ierr /= 0) return
+       s% lxtra(1) = .false. ! avoid re-entering here
+       if(s% x_logical_ctrl(1)) then !check for central carbon depletion, only in case we run single stars.
           print *,  "*** Single star depleted carbon ***"
-          print *, "read inlist_to_CC"
-          call read_star_job(s, "inlist_to_CC", ierr)
+          print *, "reading inlist_to_cc_EB..."
+          call read_star_job(s, "inlist_to_cc_EB", ierr)
           if (ierr /= 0) then
-             print *, "Failed reading star_job in inlist_to_CC"
+             print *, "... failed reading star_job in inlist_to_cc_EB"
              return
           end if
-          print *, "read star_job from inlist_to_CC"
-          call star_read_controls(id, "inlist_to_CC", ierr)
+          print *, "... successfully read star_job from inlist_to_cc_EB"
+          call star_read_controls(id, "inlist_to_cc_EB", ierr)
           if (ierr /= 0) then
-             print *, "Failed reading controls in inlist_to_CC"
+             print *, "... failed reading controls in inlist_to_cc_EB"
              return
           end if
-          print *, "read controls from inlist_to_CC"
-          s% lxtra(11) = .false. ! avoid re-entering here
-       else if (.not. s% x_logical_ctrl(1)) then ! stop
+          print *, "... successfully read controls from inlist_to_cc_EB"
+       else ! stop
           print *,  "*** Single star depleted carbon ***"
-          extras_finish_step = terminate
+          Extras_finish_step = terminate
        end if
     end if
 
