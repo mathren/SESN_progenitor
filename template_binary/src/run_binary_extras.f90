@@ -367,7 +367,8 @@ contains
     ! check if donor has depleted C and companion is point mass
     ! if so, turn off binary stuff
     if ((b% s1% center_h1 < 1.0d-2) .and. (b% s1% center_he4 < 1.0d-4) .and. (b% s1% center_c12 < 2.0d-2) &
-         .and. (b% point_mass_i == 2)) then
+         .and. (b% point_mass_i == 2) &
+         .and. b% s1% lxtra(1)) then ! this prevent re-entering
        b% ignore_hard_limits_this_step = .true.
        b% mtransfer_rate = 0d0
        b% change_factor = b% max_change_factor

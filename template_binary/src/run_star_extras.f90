@@ -96,6 +96,7 @@ contains
     if (ierr /= 0) return
     extras_start_step = 0
 
+    print *, "Sanity check v_flag", s%v_flag
   end function extras_start_step
 
 
