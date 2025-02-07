@@ -80,7 +80,9 @@ contains
     call star_ptr(id, s, ierr)
     if (ierr /= 0) return
 
-    s% lxtra(1) = .true. ! do we still need to read inlist_to_CC?
+    if (.not. restart) then
+       s% lxtra(1) = .true. ! do we still need to read inlist_to_CC?
+    end if
 
   end subroutine extras_startup
 
@@ -131,44 +133,6 @@ contains
     character (len=maxlen_history_column_name) :: names(n)
     real(dp) :: vals(n)
     integer, intent(out) :: ierr
-    ! POSYDON output
-    real(dp) :: ocz_top_radius, ocz_bot_radius, &
-         ocz_top_mass, ocz_bot_mass, mixing_length_at_bcz, &
-         dr, ocz_turnover_time_g, ocz_turnover_time_l_b, ocz_turnover_time_l_t, &
-         env_binding_E, total_env_binding_E, MoI
-    integer :: i, k, n_conv_bdy, nz, k_ocz_bot, k_ocz_top
-    integer :: i1, k1, k2, j
-    real(dp) :: avg_c_in_c_core
-    integer ::  top_bound_zone, bot_bound_zone
-    real(dp) :: m_env, Dr_env, Renv_middle, tau_conv, tau_conv_new, m_conv_core, f_conv
-    real(dp) :: r_top, r_bottom, m_env_new, Dr_env_new, Renv_middle_new
-    !real(dp) :: conv_mx_top, conv_mx_bot, conv_mx_top_r, conv_mx_bot_r, k_div_T_posydon_new, k_div_T_posydon
-    !integer :: n_conv_regions_posydon
-    integer,  dimension (max_num_mixing_regions) :: n_zones_of_region, bot_bdy, top_bdy
-    !real(dp), dimension (max_num_mixing_regions) :: cz_bot_mass_posydon
-    !real(dp) :: cz_bot_radius_posydon(max_num_mixing_regions)
-    !real(dp), dimension (max_num_mixing_regions) :: cz_top_mass_posydon, cz_top_radius_posydon
-    integer :: h1, he4, c12, o16
-    real(dp) :: he_core_mass_1cent,  he_core_mass_10cent, he_core_mass_30cent
-    real(dp) :: he_core_radius_1cent, he_core_radius_10cent, he_core_radius_30cent
-    real(dp) ::  lambda_CE_1cent, lambda_CE_10cent, lambda_CE_30cent, lambda_CE_pure_He_star_10cent
-    real(dp),  dimension (:), allocatable ::  adjusted_energy
-    real(dp) :: rec_energy_HII_to_HI, &
-         rec_energy_HeII_to_HeI, &
-         rec_energy_HeIII_to_HeII, &
-         diss_energy_H2, &
-         frac_HI, frac_HII, &
-         frac_HeI, frac_HeII, frac_HeIII, &
-         avg_charge_He, energy_comp
-    real(dp) :: co_core_mass, co_core_radius
-    integer :: co_core_k
-    logical :: sticking_to_energy_without_recombination_corr
-    real(dp) :: XplusY_CO_core_mass_threshold
-    ! to save core-envelope bounday layer
-    real(dp) :: offset
-    real(dp) :: min_m_boundary, max_m_boundary
-    logical :: have_30_value, have_10_value, have_1_value, have_co_value
-    ! -------------------------------------
     type (star_info), pointer :: s
     ierr = 0
     call star_ptr(id, s, ierr)

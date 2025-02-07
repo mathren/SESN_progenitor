@@ -50,6 +50,8 @@ use_Type2_opacities                             = .true.
 
 &controls
 
+! if you run into issues, you can increase Pextra
+! extra pressure helps stabilize the atmosphere during core He burning +
 Pextra_factor                                   = 2 ! easy to lower with mass loss!ideally 1.5 is most physical
 atm_option                                      = 'T_tau'
 atm_T_tau_relation                              = 'Eddington'
@@ -198,7 +200,7 @@ T_function2_param = 2.4d8
 ! increase resolution for omega
 ! omega_function_weight = 100d0
 
-! Jim Fuller's suggestion
+! Suggested by Jim Fuller, can be useful for convergence see also (Farag et al. 2022).
 set_min_D_mix = .true.
 min_D_mix=1d-2
 

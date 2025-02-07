@@ -38,8 +38,8 @@ fi
 png=$(find  -path "./png/*.png" -printf "%T@ %P\n" | sort -n | tail -1 | awk '{print $2}') ;
 if [ $? -eq 0 ]; then
     # found png
-    tail -n 50 output_restart.txt | mail -A $png -a "From:simulations@arizona.edu" -s "restart run done" $1
+    tail -n 50 output_restart.txt | mail -A $png -a "From:simulations@arizona.edu" -s "restart run done" $2
 else
     # no png found
-    tail -n 50 output_restart.txt | mail -a "From:simulations@arizona.edu" -s "restart run done" $1
+    tail -n 50 output_restart.txt | mail -a "From:simulations@arizona.edu" -s "restart run done" $2
 fi

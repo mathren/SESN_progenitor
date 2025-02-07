@@ -161,19 +161,16 @@ contains
     type (binary_info), pointer :: b
     integer, intent(in) :: binary_id
     integer:: i_don, i_acc
-    real(dp) :: r_l2, d_l2, TAMS_h1_treshold
-    real(dp) :: q
     integer :: ierr
+    real(dp) :: q, d_l2, r_l2
     call binary_ptr(binary_id, b, ierr)
     if (ierr /= 0) then ! failure in  binary_ptr
        return
     end if
     extras_binary_check_model = keep_going
 
-    TAMS_h1_treshold = 1d-2
-
     if (b% point_mass_i /= 1) then !Check for L2 overflow for primary when not in MS
-       if (b% s1% center_h1 < TAMS_h1_treshold) then ! Misra et al. 2020 L2 overflow check starts only after TAMS of one of the two stars. Before we use Marchant et al. 2016 L2 overflow check implemented already in MESA
+       if (b% s1% center_h1 < 1.0d-2) then ! Misra et al. 2020 L2 overflow check starts only after TAMS of one of the two stars. Before we use Marchant et al. 2016 L2 overflow check implemented already in MESA
           i_don = 1
           i_acc = 2
           if (b% m(i_don) .gt. b% m(i_acc)) then !mdon>macc, q<1
@@ -211,7 +208,7 @@ contains
     end if
 
     if (b% point_mass_i /= 2) then  !Check for L2 overflow for primary when not in MS
-       if (b% s2% center_h1 < TAMS_h1_treshold) then ! Misra et al. 2020 L2 overflow check starts only after TAMS of one of the two stars. Before we use Marchant et al. 2016 L2 overflow check implemented already in MESA
+       if (b% s2% center_h1 < 1.0d-2) then ! Misra et al. 2020 L2 overflow check starts only after TAMS of one of the two stars. Before we use Marchant et al. 2016 L2 overflow check implemented already in MESA
           i_don = 2
           i_acc = 1
           if (b% m(i_don) .gt. b% m(i_acc)) then !mdon>macc, q<1
@@ -269,22 +266,16 @@ contains
     integer, intent(in) :: binary_id
     integer :: star_id, ierr
     character (len=200) :: fname
-    real(dp) :: q, mdot_limit_low, mdot_limit_high, &
-         center_h1, center_h1_old, center_he4, center_he4_old, &
-         rl23,rl2_1,trap_rad, mdot_edd, mdot_edd_eta, TAMS_h1_treshold
-    logical :: is_ne_biggest
+    real(dp) :: q
     call binary_ptr(binary_id, b, ierr)
     if (ierr /= 0) then ! failure in  binary_ptr
        return
     end if
     extras_binary_finish_step = keep_going
 
-    ! abundance threshold for center_h1 defining TAMS
-    TAMS_h1_treshold = 1d-2
-
     ! find donor's TAMS
     if ((b% lxtra(1) .eqv. .false.) .and. &
-       (b% s1% xa(b% s1% net_iso(ih1), b% s1% nz) < TAMS_h1_treshold)) then
+       (b% s1% xa(b% s1% net_iso(ih1), b% s1% nz) < 1.0d-2)) then
        b% lxtra(1) = .true.
        b% xtra(1) = b% s1% r(1)
        print *, "saved donor radius at TAMS", b% xtra(1)/Rsun
@@ -329,7 +320,7 @@ contains
     ! find accretor TAMS if you are evolving it
     if ((b% lxtra(3) .eqv. .false.) .and. & ! not accretor TAMS yet
          (b% point_mass_i /= 2)) then       ! computing the accretor
-       if (b% s2 % xa(b% s2% net_iso(ih1), b% s2% nz) < TAMS_h1_treshold) then
+       if (b% s2 % xa(b% s2% net_iso(ih1), b% s2% nz) < 1.0d-2) then
           write(fname, fmt="(a17)") 'accretor_TAMS.mod'
           call star_write_model(b% star_ids(2), fname, ierr)
           write(fname, fmt="(a18)") 'accretor_TAMS.data'
@@ -341,7 +332,7 @@ contains
 
     if (b% point_mass_i == 0) then
        ! Check for simultaneous RLOF from both stars after TAMS of one star
-       if (b% s2% center_h1 < TAMS_h1_treshold .or. b% s1% center_h1 < TAMS_h1_treshold) then
+       if (b% s2% center_h1 < 1.0d-2 .or. b% s1% center_h1 < 1.0d-2) then
           if (b% rl_relative_gap(1) > 0.0_dp .and. b% rl_relative_gap(2) > 0.0_dp) then
              extras_binary_finish_step = terminate
              write(*,'(g0)') "termination code: Both stars fill their Roche Lobe and at least one of them is off MS"
@@ -357,7 +348,7 @@ contains
 
     ! check for L2 overflow after ZAMS, but before TAMS
     if(.not. b% ignore_rlof_flag .and. extras_binary_finish_step /= terminate .and. (b% point_mass_i == 0)) then ! only when we evolve both stars in MS
-       if (b% s1% center_h1 > TAMS_h1_treshold .and. b% s2% center_h1 > TAMS_h1_treshold) then
+       if (b% s1% center_h1 > 1.0d-2 .and. b% s2% center_h1 > 1.0d-2) then
           if (b% m(1) > b% m(2)) then
              q = b% m(2) / b% m(1)
              star_id = 2
@@ -371,6 +362,27 @@ contains
           end if
        end if
     end if
+
+
+    ! check if donor has depleted C and companion is point mass
+    ! if so, turn off binary stuff
+    if ((b% s1% center_h1 < 1.0d-2) .and. (b% s1% center_he4 < 1.0d-4) .and. (b% s1% center_c12 < 2.0d-2) &
+         .and. (b% point_mass_i == 2)) then
+       b% ignore_hard_limits_this_step = .true.
+       b% mtransfer_rate = 0d0
+       b% change_factor = b% max_change_factor
+       b% do_tidal_sync = .false.
+       b% do_j_accretion = .false.
+       b% do_jdot_mb = .false.
+       b% do_jdot_missing_wind = .false.
+       b% ignore_rlof_flag = .true.
+       b% mdot_edd = 1d99
+       b% mdot_edd_eta = 0d0
+       print *, "ignoring binary stuff from now on! Watch out for missing case BB RLOF!"
+    end if
+
+
+
   end function extras_binary_finish_step
 
   subroutine extras_binary_after_evolve(binary_id, ierr)
