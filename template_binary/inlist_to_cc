@@ -1,74 +1,42 @@
 &star_job
-! switch hydro on
-change_v_flag                                   = .true.
-new_v_flag                                      = .true.
+/ ! end of star_job namelist
 
-show_retry_counts_when_terminate                = .true.
-show_timestep_limit_counts_when_terminate       = .true.
-save_pgstar_files_when_terminate                = .true.
-
-/
 
 &controls
-max_model_number                                = 100000
 
-! set already in inlist_both
-! Pextra_factor                                   = 2 ! easy to lower with mass loss!ideally 1.5 is most physical
-! atm_option                                      = 'T_tau'
-! atm_T_tau_relation                              = 'Eddington'
-! atm_T_tau_opacity                               = 'fixed' ! next best is 'iterated'
-
-! Turn off secular mixing processes which are too slow in late evolution
-alpha_semiconvection = 0.0d0
-! alpha_semiconvection                            = 1.0d0! EB: 0.1d0
-! semiconvection_option                           = 'Langer_85 mixing; gradT = gradr'
-! thermohaline_option                             = 'Kippenhahn'
-thermohaline_coeff                              = 0
-
-mlt_make_surface_no_mixing                      = .true.
+! stopping condition
+fe_core_infall_limit                            = 5d7 ! 500 km/s infall.
+non_fe_core_infall_limit                        = 5d7 ! km/s
 
 ! drag to prevent the development of radial pulses.
+! I turned this on above logT ~ 9.7 GK in this test, so the wave fro .
 use_drag_energy                                 = .false.
 drag_coefficient                                = 1d0
 min_q_for_drag                                  = 0.8d0
 
+! Turn off wind
+! hot_wind_scheme                               = ''
+! cool_wind_RGB_scheme                          = ''
+! cool_wind_AGB_scheme                          = ''
 
-! when to stop
-fe_core_infall_limit                            = 1d8
-non_fe_core_infall_limit                        = 1d8
-fe_core_infall_mass                             = 0.95d0
-
-
-! Envelope tricks: already turned on in inlist_both
-! use_superad_reduction                         = .false.
-! superad_reduction_Gamma_limit                 = 0.5d0 ! default is 0.5d0
-! superad_reduction_Gamma_limit_scale           = 5d0
-! superad_reduction_Gamma_inv_scale             = 5d0
-! superad_reduction_diff_grads_limit            = 1d-2 ! default is 1d-3
-! superad_reduction_limit                       = -1d0
-
-! ! MLT ++, explicit, well tested
-! okay_to_reduce_gradT_excess                   = .true.
-! gradT_excess_f1                               = 1d-4
-! gradT_excess_f2                               = 1d-2
-! gradT_excess_lambda1                          = -1d0 ! full on
-
+! Turn off thermohaline and semiconvection
+thermohaline_coeff                              = 0
+alpha_semiconvection                            = 0d0 !1.0d0
+mlt_make_surface_no_mixing                      = .true.
 
 ! timesteps
-min_timestep_limit                              = 1d-20 !(seconds) ! lower this for very end
-! time_delta_coeff                                = 1.0
-! varcontrol_target                               = 1d-3
+min_timestep_limit                              = 1d-20 !(seconds)
+time_delta_coeff                                = 1.0
+varcontrol_target                               = 1d-3
 
 min_timestep_factor                             = 0.8d0
 max_timestep_factor                             = 1.05d0
 timestep_factor_for_retries                     = 0.75
 
 limit_for_rel_error_in_energy_conservation      = -1!1d-7
-! already set in inlist_both
-! hard_limit_for_rel_error_in_energy_conservation = -1!1d-6
+hard_limit_for_rel_error_in_energy_conservation = -1!1d-6
 
-! When switching we need to skip some hard limits
-never_skip_hard_limits                        = .true.
+never_skip_hard_limits                          = .true.
 min_xa_hard_limit                               = -1d-5
 min_xa_hard_limit_for_highT                     = -3d-5
 
@@ -123,14 +91,15 @@ delta_lg_XHe_cntr_min                           = 0.5d0
 
 delta_Ye_highT_limit                            = 1d-3
 
-! ! mesh
+
+! mesh
 !max_dq                                         = 1d-3 ! or lower
-! mesh_delta_coeff                              = 1.5 ! try 1.0 or below in production run
-mesh_delta_coeff_for_highT                      = 1.0d0  ! EB 1.5 ! try 1.0 or below in production run
+mesh_delta_coeff                                = 1.0d0 !1.5 EB ! try 1.0 or below in production run
+mesh_delta_coeff_for_highT                      = 1.0d0 !1.5 EB ! try 1.0 or below in production run
 logT_max_for_standard_mesh_delta_coeff          = 9.0
 logT_min_for_highT_mesh_delta_coeff             = 9.5
-min_dq_for_xa                                  = 1d-4 ! avoid over-resolving composition changes, bad for bit for bit convergence
-remesh_dt_limit                                = 1728000 ! 20 days. turn off remesh when dt smaller than this
+!min_dq_for_xa                                  = 1d-4 ! avoid over-resolving composition changes, bad for bit for bit convergence
+!remesh_dt_limit                                = 1728000 ! 20 days. turn off remesh when dt smaller than this
 
 R_function_weight                               = 40
 R_function3_weight                              = 40
@@ -169,7 +138,6 @@ gold2_tol_max_residual3                         = 5d-4
 
 max_abs_rel_run_E_err                           = 1d-2 ! maximum energy error before model is terminated.
 
-
 !defaults
 when_to_stop_rtol                               = 1d-3
 when_to_stop_atol                               = 1d-3
@@ -194,14 +162,19 @@ terminal_show_log_dt                            = .false.
 
 !max_model_number                               = 4000000 ! if you're serious
 
-photo_interval                                  = 200 !1000
+photo_interval                                  = 50 !1000
 photo_digits                                    = 8
 profile_interval                                = 100
 max_num_profile_models                          = 400000
 history_interval                                = 1
-write_header_frequency                          = 10
-terminal_interval                               = 10
+write_header_frequency                          = 1
+terminal_interval                               = 1
 
+! debugging
+!report_solver_progress                         = .true. ! set true to see info about solver iterations
+!report_ierr                                    = .true. ! if true, produce terminal output when have some internal error
 
+/
 
+&pgstar
 /

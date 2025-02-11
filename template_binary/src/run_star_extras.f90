@@ -36,6 +36,7 @@ module run_star_extras
   ! these routines are called by the standard run_star check_model
 contains
 
+  include 'dbconvpen/dbconvpen.inc'
 
   subroutine extras_controls(id, ierr)
     integer, intent(in) :: id
@@ -68,6 +69,7 @@ contains
     s% how_many_extra_profile_header_items => how_many_extra_profile_header_items
     s% data_for_extra_profile_header_items => data_for_extra_profile_header_items
 
+    s% other_overshooting_scheme => extended_convective_penetration
   end subroutine extras_controls
 
 
@@ -95,8 +97,6 @@ contains
     call star_ptr(id, s, ierr)
     if (ierr /= 0) return
     extras_start_step = 0
-
-    print *, "Sanity check v_flag", s%v_flag
   end function extras_start_step
 
 
@@ -226,24 +226,24 @@ contains
          .and. (s%lxtra(1))) then
        print *, "Save model at C depl"
        write(fname, fmt="(a15)") 'donor_Cdepl.mod' ! N.B.: if running both stars this will cause overwriting! fix by moving to run_binary_extras.f90
-       call star_write_model(s% id, fname, ierr)
+       call star_write_model(id, fname, ierr)
        if (ierr /= 0) return
        s% lxtra(1) = .false. ! avoid re-entering here
        if(s% x_logical_ctrl(1)) then !check for central carbon depletion, only in case we run single stars.
           print *,  "*** Single star depleted carbon ***"
-          print *, "reading inlist_to_cc_EB..."
-          call read_star_job(s, "inlist_to_cc_EB", ierr)
+          s% job% save_model_filename = "donor_cc.mod"
+          s% job% required_termination_code_string = 'fe_core_infall_limit'
           if (ierr /= 0) then
-             print *, "... failed reading star_job in inlist_to_cc_EB"
+             print *, "... failed reading star_job in inlist_to_cc"
              return
           end if
-          print *, "... successfully read star_job from inlist_to_cc_EB"
-          call star_read_controls(id, "inlist_to_cc_EB", ierr)
+          print *, "... successfully read star_job from inlist_to_cc"
+          call star_read_controls(id, "inlist_to_cc", ierr)
           if (ierr /= 0) then
-             print *, "... failed reading controls in inlist_to_cc_EB"
+             print *, "... failed reading controls in inlist_to_cc"
              return
           end if
-          print *, "... successfully read controls from inlist_to_cc_EB"
+          print *, "... successfully read controls from inlist_to_cc"
        else ! stop
           print *,  "*** Single star depleted carbon ***"
           Extras_finish_step = terminate
