@@ -81,10 +81,10 @@ Dutch_scaling_factor                            = 1.0  ! this is LARGE
 mdot_omega_power                                = 0.43d0
 
 ! mixing
-! MLT_option                                      = 'TDC'
-! alpha_TDC_DAMPR                                 = 3d0 ! radiative dissipation !0d0 is default for mlt limit of TDC. 3 ~ henyey
-! use_ledoux_criterion                            = .true.
-! mixing_length_alpha                             = 1.5d0
+MLT_option                                      = 'TDC'
+alpha_TDC_DAMPR                                 = 3d0 ! radiative dissipation !0d0 is default for mlt limit of TDC. 3 ~ henyey
+use_ledoux_criterion                            = .true.
+mixing_length_alpha                             = 2.0d0
 alpha_semiconvection                            = 1.0d0 !1.0d0
 thermohaline_coeff                              = 666.0d0 !1.0d0
 ! thermohaline_option                           = 'Brown_Garaud_Stellmach_13'
@@ -96,44 +96,39 @@ thermohaline_coeff                              = 666.0d0 !1.0d0
 ! overshoot_bdy_loc(1)                            = 'top'
 ! overshoot_f(1)                                  = 4.15d-2
 ! overshoot_f0(1)                                 = 0.008d0
-
-
 ! Overshoot_scheme(2)                             = 'exponential'
 ! overshoot_zone_type(2)                          = 'burn_He'
 ! overshoot_zone_loc(2)                           = 'core'
 ! overshoot_bdy_loc(2)                            = 'top'
 ! overshoot_f(2)                                  = 4.15d-2
 ! overshoot_f0(2)                                 = 0.008d0
-
-
-! Brott+11
-! overshoot_scheme(1)                           = 'step'
-! overshoot_zone_type(1)                        = 'any'
-! overshoot_zone_loc(1)                         = 'core'
-! overshoot_bdy_loc(1)                          = 'any'
-! overshoot_f(1)                                = 0.345d0
-! overshoot_f0(1)                               = 0.01d0
-
-! Johnston+24 overshooting
-use_Ledoux_criterion = .false.
-MLT_option = 'Cox'
-mixing_length_alpha = 1.8d0
-do_conv_premix = .true.
-predictive_mix(1) = .false.
-predictive_zone_type(1) = 'any'
-predictive_zone_loc(1) = 'core'
-predictive_bdy_loc(1) = 'top'
+! ------------------------------------------------Brott+11
+overshoot_scheme(1)                           = 'step'
+overshoot_zone_type(1)                        = 'any'
+overshoot_zone_loc(1)                         = 'core'
+overshoot_bdy_loc(1)                          = 'any'
+overshoot_f(1)                                = 0.345d0
+overshoot_f0(1)                               = 0.01d0
+! -----------------------------------------------Johnston+24 overshooting
+! use_Ledoux_criterion = .false.
+! MLT_option = 'Cox'
+! mixing_length_alpha = 1.8d0
+! do_conv_premix = .true.
+! predictive_mix(1) = .false.
+! predictive_zone_type(1) = 'any'
+! predictive_zone_loc(1) = 'core'
+! predictive_bdy_loc(1) = 'top'
 
 ! Overshooting
-overshoot_scheme(1) = 'other' ! use dissipation balanced convective penetration
-overshoot_zone_type(1) = 'any'
-overshoot_zone_loc(1) = 'core'
-overshoot_bdy_loc(1) = 'top'
+! overshoot_scheme(1) = 'other' ! use dissipation balanced convective penetration
+! overshoot_zone_type(1) = 'any'
+! overshoot_zone_loc(1) = 'core'
+! overshoot_bdy_loc(1) = 'top'
 
 ! add some exponential overshooting on top
-overshoot_f0(1) = 0.005
-overshoot_f(1) = 0.01
-
+! overshoot_f0(1) = 0.005
+! overshoot_f(1) = 0.01
+! ----------------------------------------------------------------------
 
 
 ! from inlist_massive_defaults -------------------------------------

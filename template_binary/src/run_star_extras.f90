@@ -36,8 +36,6 @@ module run_star_extras
   ! these routines are called by the standard run_star check_model
 contains
 
-  include 'dbconvpen/dbconvpen.inc'
-
   subroutine extras_controls(id, ierr)
     integer, intent(in) :: id
     integer, intent(out) :: ierr
@@ -69,7 +67,6 @@ contains
     s% how_many_extra_profile_header_items => how_many_extra_profile_header_items
     s% data_for_extra_profile_header_items => data_for_extra_profile_header_items
 
-    s% other_overshooting_scheme => extended_convective_penetration
   end subroutine extras_controls
 
 
