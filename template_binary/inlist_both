@@ -90,25 +90,25 @@ thermohaline_coeff                              = 666.0d0 !1.0d0
 ! thermohaline_option                           = 'Brown_Garaud_Stellmach_13'
 
 ! ! ! overshoot controls
-! overshoot_scheme(1)                             = 'exponential'
-! overshoot_zone_type(1)                          = 'burn_H'
-! overshoot_zone_loc(1)                           = 'core'
-! overshoot_bdy_loc(1)                            = 'top'
-! overshoot_f(1)                                  = 4.15d-2
-! overshoot_f0(1)                                 = 0.008d0
-! Overshoot_scheme(2)                             = 'exponential'
-! overshoot_zone_type(2)                          = 'burn_He'
-! overshoot_zone_loc(2)                           = 'core'
-! overshoot_bdy_loc(2)                            = 'top'
-! overshoot_f(2)                                  = 4.15d-2
-! overshoot_f0(2)                                 = 0.008d0
+overshoot_scheme(1)                             = 'exponential'
+overshoot_zone_type(1)                          = 'any'
+overshoot_zone_loc(1)                           = 'core'
+overshoot_bdy_loc(1)                            = 'top'
+overshoot_f(1)                                  = 4.15d-2
+overshoot_f0(1)                                 = 0.008d0
+Overshoot_scheme(2)                             = 'exponential'
+overshoot_zone_type(2)                          = 'any'
+overshoot_zone_loc(2)                           = 'core'
+overshoot_bdy_loc(2)                            = 'bottom'
+overshoot_f(2)                                  = 4.15d-3
+overshoot_f0(2)                                 = 0.008d-1
 ! ------------------------------------------------Brott+11
-overshoot_scheme(1)                           = 'step'
-overshoot_zone_type(1)                        = 'any'
-overshoot_zone_loc(1)                         = 'core'
-overshoot_bdy_loc(1)                          = 'any'
-overshoot_f(1)                                = 0.345d0
-overshoot_f0(1)                               = 0.01d0
+! overshoot_scheme(1)                           = 'step'
+! overshoot_zone_type(1)                        = 'any'
+! overshoot_zone_loc(1)                         = 'core'
+! overshoot_bdy_loc(1)                          = 'any'
+! overshoot_f(1)                                = 0.345d0
+! overshoot_f0(1)                               = 0.01d0
 ! -----------------------------------------------Johnston+24 overshooting
 ! use_Ledoux_criterion = .false.
 ! MLT_option = 'Cox'
