@@ -83,6 +83,18 @@ contains
        s% lxtra(1) = .true.  ! are we before carbon C depl?
        s% lxtra(2) = .true.  ! do we still need to read inlist_to_CC?
     end if
+  end subroutine extras_startup
+
+
+  integer function extras_start_step(id)
+    integer, intent(in) :: id
+    integer :: ierr
+    type (star_info), pointer :: s
+    ierr = 0
+    call star_ptr(id, s, ierr)
+    if (ierr /= 0) return
+    extras_start_step = 0
+
 
     !check for central carbon depletion, if continuing, read inlist_to_cc
     if (s% x_logical_ctrl(1) .and. &         ! want to continue? (se in inlist_both)
