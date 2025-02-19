@@ -55,22 +55,22 @@ use_Type2_opacities                             = .true.
 
 ! if you run into issues, you can increase Pextra
 ! extra pressure helps stabilize the atmosphere during core He burning +
-Pextra_factor                                   = 2 ! easy to lower with mass loss!ideally 1.5 is most physical
+Pextra_factor                                   = 1.0d0 ! 2.0d0 ! easy to lower with mass loss!ideally 1.5 is most physical
 atm_option                                      = 'T_tau'
 atm_T_tau_relation                              = 'Eddington'
 atm_T_tau_opacity                               = 'fixed' ! next best is 'iterated'
 
 
 hard_limit_for_rel_error_in_energy_conservation = -1d0
-! use_superad_reduction                         = .true. ! need to try MLT++ for binary evolution part
-okay_to_reduce_gradT_excess                     = .true.
-gradT_excess_f1                                 = 1d-4
-gradT_excess_f2                                 = 1d-2
-gradT_excess_lambda1                            = -1d0 ! full on
+use_superad_reduction                         = .true.
+! okay_to_reduce_gradT_excess                     = .true.
+! gradT_excess_f1                                 = 1d-4
+! gradT_excess_f2                                 = 1d-2
+! gradT_excess_lambda1                            = -1d0 ! full on
 
-! to stop at C depletion
-x_logical_ctrl(2)                               = .true.
-max_model_number                                = 50000 ! if true above, and the binary detaches, this will be overwritten in run_star_extras.f90
+! to continue after C depletion
+x_logical_ctrl(1)                               = .true.
+max_model_number                                = 10500
 redo_limit                                      = 300
 
 !wind

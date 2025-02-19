@@ -80,7 +80,24 @@ contains
     if (ierr /= 0) return
 
     if (.not. restart) then
-       s% lxtra(1) = .true. ! do we still need to read inlist_to_CC?
+       s% lxtra(1) = .true.  ! are we before carbon C depl?
+       s% lxtra(2) = .true.  ! do we still need to read inlist_to_CC?
+    end if
+
+    !check for central carbon depletion, if continuing, read inlist_to_cc
+    if (s% x_logical_ctrl(1) .and. &         ! want to continue? (se in inlist_both)
+        (s% lxtra(1) .eqv. .false.) .and. &  ! passed C depletion?
+        s% lxtra(2)) then                    ! already read inlist_to_cc?
+       s% job% save_model_filename = "donor_cc.mod"
+       s% job% required_termination_code_string = 'fe_core_infall_limit'
+       s% max_model_number = 15000
+       call star_read_controls(id, "inlist_to_cc", ierr)
+       if (ierr /= 0) then
+          print *, "... failed reading controls in inlist_to_cc"
+          return
+       end if
+       print *, "... successfully read controls from inlist_to_cc"
+       s% lxtra(2) = .false. ! avoid re-entering
     end if
 
   end subroutine extras_startup
@@ -94,6 +111,9 @@ contains
     call star_ptr(id, s, ierr)
     if (ierr /= 0) return
     extras_start_step = 0
+
+
+
   end function extras_start_step
 
 
@@ -211,7 +231,7 @@ contains
   ! note: cannot request retry or backup; extras_check_model can do that.
   integer function extras_finish_step(id)
     integer, intent(in) :: id
-    integer :: ierr
+    integer :: ierr, k
     type (star_info), pointer :: s
     character (len=200) :: fname
     ierr = 0
@@ -221,31 +241,47 @@ contains
 
     if ((s% center_h1 < 1.0d-2) .and. (s% center_he4 < 1.0d-4) .and. (s% center_c12 < 2.0d-2) &
          .and. (s%lxtra(1))) then
+       print *,  "*** Single star depleted carbon ***"
        print *, "Save model at C depl"
        write(fname, fmt="(a15)") 'donor_Cdepl.mod' ! N.B.: if running both stars this will cause overwriting! fix by moving to run_binary_extras.f90
        call star_write_model(id, fname, ierr)
        if (ierr /= 0) return
        s% lxtra(1) = .false. ! avoid re-entering here
-       if(s% x_logical_ctrl(1)) then !check for central carbon depletion, only in case we run single stars.
-          print *,  "*** Single star depleted carbon ***"
-          s% job% save_model_filename = "donor_cc.mod"
-          s% job% required_termination_code_string = 'fe_core_infall_limit'
-          if (ierr /= 0) then
-             print *, "... failed reading star_job in inlist_to_cc"
-             return
-          end if
-          print *, "... successfully read star_job from inlist_to_cc"
-          call star_read_controls(id, "inlist_to_cc", ierr)
-          if (ierr /= 0) then
-             print *, "... failed reading controls in inlist_to_cc"
-             return
-          end if
-          print *, "... successfully read controls from inlist_to_cc"
-       else ! stop
-          print *,  "*** Single star depleted carbon ***"
-          Extras_finish_step = terminate
+       if (.not. s%x_logical_ctrl(1)) then ! don't continue
+          extras_finish_step = terminate
        end if
     end if
+
+
+
+    ! ! custom Fe core collapse
+    if (s% fe_core_mass >0.0d0) then
+       !log more stuff in the terminal
+       s% num_trace_history_values    = 5
+       s% trace_history_value_name(1) = 'Fe_core'
+       s% trace_history_value_name(2) = 'fe_core_infall'
+       s% trace_history_value_name(3) = 'non_fe_core_infall'
+       s% trace_history_value_name(4) = 'rel_E_err'
+       s% trace_history_value_name(5) = 'log_rel_run_E_err'
+       s% trace_history_value_name(6) = 'dt_div_max_tau_conv'
+       ! initialize counter
+       k = s%nz
+       do while (s% m(k) <= s% fe_core_mass * Msun)
+          k = k-1 ! loop outwards
+       end do
+       ! k is now the outer index of the fe core
+       if (maxval(abs(s%v(k:s%nz))) >= s% fe_core_infall_limit) then
+          s% termination_code = t_fe_core_infall_limit
+          write(*, '(/,a,/, 99e20.10)') &
+               'stop because fe_core_infall > fe_core_infall_limit', &
+               s% fe_core_infall, s% fe_core_infall_limit
+          print *, "treshold v used", maxval(abs(s%v(k:s%nz)))
+          extras_finish_step = terminate
+       end if
+    end if
+
+
+
 
     if (extras_finish_step == terminate) s% termination_code = t_extras_finish_step
   end function extras_finish_step
