@@ -81,7 +81,7 @@ contains
     if (ierr /= 0) return
  
     ! Initialize variables on startup.
-    if (restart) s% lxtra(11) = .true. ! do we still need to read inlist_to_CC? -> yes.
+    s% lxtra(11) = .true. ! do we still need to read inlist_to_CC? -> yes.
 
   end subroutine extras_startup
 
