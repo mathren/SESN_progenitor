@@ -285,7 +285,7 @@ contains
        if (current_fe_core_infall > 2d0) then ! avoid print out until the infall speed exceeds 2 km/s
           write(*,*) 'fe_core_infall = ', current_fe_core_infall, 'km/s'! (-)
           write (*,*) 'fe_core_infall limit', fe_core_infall_limit, 'km/s'
-          if (- current_fe_core_infall >= fe_core_infall_limit) then
+          if (current_fe_core_infall >= fe_core_infall_limit) then
              s% termination_code = t_fe_core_infall_limit
              write(*, '(/,a,/, 99e20.10)') &
                   'stop because fe_core_infall > fe_core_infall_limit', &
