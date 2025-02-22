@@ -293,7 +293,7 @@ write_header_frequency = 10
 terminal_interval      = 10
 
 ! debugging
-report_solver_progress = .true. ! set true to see info about solver iterations
+report_solver_progress = .false. ! set true to see info about solver iterations
 !report_ierr = .true. ! if true, produce terminal output when have some internal error
 
 

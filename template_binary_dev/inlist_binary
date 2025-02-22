@@ -27,8 +27,9 @@ min_mdot_for_implicit = 1d-10
 implicit_scheme_tiny_factor = 1d-6
 ! report_rlo_solver_progress = .true.
 
-write_header_frequency = 1
+write_header_frequency = 100 !1
 history_interval = 1
+terminal_interval = 10
 
 do_tidal_sync = .true.
 do_j_accretion = .false. ! if .true. use A.3.3 of de Mink et al. 2013, ApJ, 764, 166

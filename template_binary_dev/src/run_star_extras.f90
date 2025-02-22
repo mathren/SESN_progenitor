@@ -35,7 +35,6 @@ module run_star_extras
 
   ! these routines are called by the standard run_star check_model
 
-  real(dp), save :: current_fe_core_infall
 contains
 
 
@@ -82,8 +81,7 @@ contains
     if (ierr /= 0) return
  
     ! Initialize variables on startup.
-    current_fe_core_infall = 0d0
-    s% lxtra(11) = .true. ! do we still need to read inlist_to_CC? -> yes.
+    if (restart) s% lxtra(11) = .true. ! do we still need to read inlist_to_CC? -> yes.
 
   end subroutine extras_startup
 
@@ -162,14 +160,27 @@ contains
     integer, intent(in) :: id, n
     character (len=maxlen_history_column_name) :: names(n)
     real(dp) :: vals(n)
+    integer :: k
     integer, intent(out) :: ierr
     type (star_info), pointer :: s
     ierr = 0
     call star_ptr(id, s, ierr)
     if (ierr /= 0) return
 
-    names(1) = 'Fe_core_infall_speed'
-    vals(1) = current_fe_core_infall
+    names(1) = 'fe_core_infall_speed'
+
+    k = 0
+    if (s% fe_core_mass > 0.0d0) then
+       k = s% nz
+       do while (s% m(k) <= s% fe_core_mass * Msun)
+          k = k-1 ! loop outwards
+       end do
+        ! We multiply by -1, since v is negative. This yields a positive infall speed, e.g. 50 km/s.
+        vals(1) = - min(0d0, minval(s%v(k:s%nz))/1d5)
+     else
+        vals(1) = 0d0
+     end if
+
   end subroutine data_for_extra_history_columns
 
 
@@ -246,7 +257,7 @@ contains
   integer function extras_finish_step(id)
     integer, intent(in) :: id
     integer :: ierr, k
-    real(dp) :: current_fe_core_infall,fe_core_infall_limit
+    real(dp) :: fe_core_infall_limit, current_fe_core_infall
     type (star_info), pointer :: s
     ierr = 0
     call star_ptr(id, s, ierr)
@@ -270,16 +281,18 @@ contains
           k = k-1 ! loop outwards
        end do
        ! k is now the outer index of the fe core
-       current_fe_core_infall = min(0d0, minval(s%v(k:s%nz))/1d5)
-       write(*,*) 'fe_core_infall = ', - current_fe_core_infall, 'km/s'! (-)
-       write (*,*) 'fe_core_infall limit', fe_core_infall_limit, 'km/s'
-       if (- current_fe_core_infall >= fe_core_infall_limit) then
-          s% termination_code = t_fe_core_infall_limit
-          write(*, '(/,a,/, 99e20.10)') &
-               'stop because fe_core_infall > fe_core_infall_limit', &
-               - current_fe_core_infall,  fe_core_infall_limit
-          print *, "treshold v used", maxval(abs(s%v(k:s%nz)))
-          extras_finish_step = terminate
+       current_fe_core_infall = - min(0d0, minval(s%v(k:s%nz))/1d5)
+       if (current_fe_core_infall > 2d0) then ! avoid print out until the infall speed exceeds 2 km/s
+          write(*,*) 'fe_core_infall = ', current_fe_core_infall, 'km/s'! (-)
+          write (*,*) 'fe_core_infall limit', fe_core_infall_limit, 'km/s'
+          if (- current_fe_core_infall >= fe_core_infall_limit) then
+             s% termination_code = t_fe_core_infall_limit
+             write(*, '(/,a,/, 99e20.10)') &
+                  'stop because fe_core_infall > fe_core_infall_limit', &
+                  current_fe_core_infall,  fe_core_infall_limit
+             print *, "treshold v used", maxval(abs(s%v(k:s%nz)))
+             extras_finish_step = terminate
+          end if
        end if
     end if
 

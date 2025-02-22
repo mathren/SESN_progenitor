@@ -122,7 +122,7 @@ include_composition_in_eps_grav = .true.
 ! max_mdot_jump_for_rotation = 10d0
 
 history_interval = 1
-terminal_interval = 1
+terminal_interval = 10 !1
 
 ! resolution
 ! time
