@@ -59,6 +59,8 @@ delta_lg_XC_cntr_hard_limit = -1
 delta_lg_XO_cntr_hard_limit = -1
 delta_lgL_He_hard_limit = -1
 delta_lgL_H_hard_limit = -1
+delta_lgL_nuc_limit = -1 
+
 
 ! stopping condition
 fe_core_infall_limit = 1d99!5d7 ! 500 km/s infall.
