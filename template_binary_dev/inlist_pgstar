@@ -141,11 +141,13 @@ Profile_Panels3_yaxis_name(2) = 'Power'
 Profile_Panels3_yaxis_name(3) = 'Mixing'
 Mixing_legend_txt_scale_factor = 0.9
 
-Profile_Panels3_yaxis_name(4) = 'logRho'
-Profile_Panels3_other_yaxis_name(4) = 'v_div_cs' ! 'vel_km_per_s' ! 'entropy'
+Profile_Panels3_yaxis_name(4) = 'logT'
+Profile_Panels3_other_yaxis_name(4) = 'burn_num_iters' ! 'vel_km_per_s' ! 'entropy'
 Profile_Panels3_other_dymin(4) = 0.14
+Profile_Panels3_other_ymin(4) = 0
+Profile_Panels3_ymin(4) = 7
 
-Profile_Panels3_yaxis_name(5) = 'logT'
+Profile_Panels3_yaxis_name(5) = 'v_div_cs'
 Profile_Panels3_other_yaxis_name(5) = 'vel_km_per_s'!'burn_num_iters'
 
 ! x-axis limits and properties

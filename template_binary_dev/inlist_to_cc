@@ -61,8 +61,9 @@ delta_lgL_He_hard_limit = -1
 delta_lgL_H_hard_limit = -1
 
 ! stopping condition
-fe_core_infall_limit = 5d7 ! 500 km/s infall.
-non_fe_core_infall_limit = 5d7 ! km/s
+fe_core_infall_limit = 1d99!5d7 ! 500 km/s infall.
+!non_fe_core_infall_limit = 500 ! km/s
+x_ctrl(1) = 500d0 ! 500 km/s infall. custom infall condition in run_star_extras.
 
 ! Suggested by Jim Fuller, can be useful for convergence see also (Farag et al. 2022).
 set_min_D_mix = .true.
@@ -76,14 +77,14 @@ op_split_burn = .true.
 op_split_burn_min_T = 4d9
 burn_steps_limit = 150
 burn_steps_hard_limit = 250
-op_split_burn_eps = 1d-5
-op_split_burn_odescal = 1d-5
+op_split_burn_eps = 1d-5 ! default
+op_split_burn_odescal = 1d-5 ! default
 
 
 ! drag to prevent the development of radial pulses.
 ! I turned this on above logT ~ 9.7 GK in this test, so the wave fro .
 use_drag_energy = .false.
-drag_coefficient = 1d0
+drag_coefficient = 0.9d0
 min_q_for_drag = 0.8d0
 
 ! wind
@@ -149,7 +150,7 @@ timestep_factor_for_retries = 0.75
 limit_for_rel_error_in_energy_conservation = 1d2!1d-7
 hard_limit_for_rel_error_in_energy_conservation = 1d2!1d-6
 
-never_skip_hard_limits = .true
+never_skip_hard_limits = .true. ! this can bomb a run.
 min_xa_hard_limit = -1d-5
 min_xa_hard_limit_for_highT = -3d-5
 
@@ -162,7 +163,7 @@ delta_lgR_limit = 1d-2
 ! Recommend decreasing all three Rho, T, Tmax
 ! to 1d-3 or lower in production runs
 delta_lgRho_cntr_limit = 5d-3!0.03
-delta_lgRho_cntr_hard_limit = -1!0.1
+delta_lgRho_cntr_hard_limit = -1!0.1 ! this can crash the model, lower time_steps instead.
 delta_lgRho_limit = 0.1
 
 delta_lgT_cntr_limit_only_after_near_zams = .true.
@@ -263,13 +264,16 @@ sig_min_factor_for_high_Tcenter = 0.01
 Tcenter_min_for_sig_min_factor_full_on = 3.2d9
 Tcenter_max_for_sig_min_factor_full_off = 2.8d9
 
-num_trace_history_values = 5
+num_trace_history_values = 6
 trace_history_value_name(1) = 'Fe_core'
-trace_history_value_name(2) = 'fe_core_infall'
-trace_history_value_name(3) = 'non_fe_core_infall'
-trace_history_value_name(4) = 'rel_E_err'
-trace_history_value_name(5) = 'log_rel_run_E_err'
-trace_history_value_name(6) = 'dt_div_max_tau_conv'
+trace_history_value_name(2) = 'rel_E_err'
+trace_history_value_name(3) = 'log_rel_run_E_err'
+trace_history_value_name(4) = 'dt_div_max_tau_conv'
+
+! we use a custom infall condition in run_star_extras instead.
+! See extras_finish_step
+!trace_history_value_name(2) = 'fe_core_infall' 
+!trace_history_value_name(3) = 'non_fe_core_infall'
 
 
 
@@ -282,7 +286,7 @@ photo_interval         = 200 !1000
 photo_digits           = 8
 profile_interval       = 100
 max_num_profile_models = 400000
-history_interval       = 1
+history_interval       = 10
 write_header_frequency = 10
 terminal_interval      = 10
 

@@ -34,6 +34,8 @@ module run_star_extras
   implicit none
 
   ! these routines are called by the standard run_star check_model
+
+  real(dp), save :: current_fe_core_infall
 contains
 
 
@@ -70,7 +72,6 @@ contains
 
   end subroutine extras_controls
 
-
   subroutine extras_startup(id, restart, ierr)
     integer, intent(in) :: id
     logical, intent(in) :: restart
@@ -79,8 +80,10 @@ contains
     ierr = 0
     call star_ptr(id, s, ierr)
     if (ierr /= 0) return
-
-    s% lxtra(11) = .true. ! do we still need to read inlist_to_CC?
+ 
+    ! Initialize variables on startup.
+    current_fe_core_infall = 0d0
+    s% lxtra(11) = .true. ! do we still need to read inlist_to_CC? -> yes.
 
   end subroutine extras_startup
 
@@ -93,6 +96,35 @@ contains
     call star_ptr(id, s, ierr)
     if (ierr /= 0) return
     extras_start_step = 0
+
+    if ((s% center_h1 < 1.0d-2) .and. (s% center_he4 < 1.0d-4) .and. (s% center_c12 < 2.0d-2)) then
+       if(s% x_logical_ctrl(1) .and. s% lxtra(11)) then !check for central carbon depletion, only in case we run single stars.
+          print *,  "*** Single star depleted carbon ***"
+          print *, "read inlist_to_CC"
+          call read_star_job(s, "inlist_to_cc", ierr)
+          if (ierr /= 0) then
+             print *, "Failed reading star_job in inlist_to_CC"
+             return
+          end if
+          print *, "read star_job from inlist_to_CC"
+
+    ! v_flag doesn't get set when reading the starjob
+      call star_set_v_flag(id,.true.,ierr)
+    !
+          call star_read_controls(id, "inlist_to_cc", ierr)
+          if (ierr /= 0) then
+             print *, "Failed reading controls in inlist_to_CC"
+             return
+          end if
+          print *, "read controls from inlist_to_CC"
+          s% lxtra(11) = .false. ! avoid re-entering here
+       end if
+    end if
+
+    ! we need to relax operator splitting minT after Si burning, to ease core-collapse.
+    if (s% center_si28 <1d-3) then
+      s% op_split_burn_min_T = 2.8d9
+    end if
 
   end function extras_start_step
 
@@ -121,7 +153,7 @@ contains
     ierr = 0
     call star_ptr(id, s, ierr)
     if (ierr /= 0) return
-    how_many_extra_history_columns = 0
+    how_many_extra_history_columns = 1
   end function how_many_extra_history_columns
 
 
@@ -131,49 +163,13 @@ contains
     character (len=maxlen_history_column_name) :: names(n)
     real(dp) :: vals(n)
     integer, intent(out) :: ierr
-    ! POSYDON output
-    real(dp) :: ocz_top_radius, ocz_bot_radius, &
-         ocz_top_mass, ocz_bot_mass, mixing_length_at_bcz, &
-         dr, ocz_turnover_time_g, ocz_turnover_time_l_b, ocz_turnover_time_l_t, &
-         env_binding_E, total_env_binding_E, MoI
-    integer :: i, k, n_conv_bdy, nz, k_ocz_bot, k_ocz_top
-    integer :: i1, k1, k2, j
-    real(dp) :: avg_c_in_c_core
-    integer ::  top_bound_zone, bot_bound_zone
-    real(dp) :: m_env, Dr_env, Renv_middle, tau_conv, tau_conv_new, m_conv_core, f_conv
-    real(dp) :: r_top, r_bottom, m_env_new, Dr_env_new, Renv_middle_new
-    !real(dp) :: conv_mx_top, conv_mx_bot, conv_mx_top_r, conv_mx_bot_r, k_div_T_posydon_new, k_div_T_posydon
-    !integer :: n_conv_regions_posydon
-    integer,  dimension (max_num_mixing_regions) :: n_zones_of_region, bot_bdy, top_bdy
-    !real(dp), dimension (max_num_mixing_regions) :: cz_bot_mass_posydon
-    !real(dp) :: cz_bot_radius_posydon(max_num_mixing_regions)
-    !real(dp), dimension (max_num_mixing_regions) :: cz_top_mass_posydon, cz_top_radius_posydon
-    integer :: h1, he4, c12, o16
-    real(dp) :: he_core_mass_1cent,  he_core_mass_10cent, he_core_mass_30cent
-    real(dp) :: he_core_radius_1cent, he_core_radius_10cent, he_core_radius_30cent
-    real(dp) ::  lambda_CE_1cent, lambda_CE_10cent, lambda_CE_30cent, lambda_CE_pure_He_star_10cent
-    real(dp),  dimension (:), allocatable ::  adjusted_energy
-    real(dp) :: rec_energy_HII_to_HI, &
-         rec_energy_HeII_to_HeI, &
-         rec_energy_HeIII_to_HeII, &
-         diss_energy_H2, &
-         frac_HI, frac_HII, &
-         frac_HeI, frac_HeII, frac_HeIII, &
-         avg_charge_He, energy_comp
-    real(dp) :: co_core_mass, co_core_radius
-    integer :: co_core_k
-    logical :: sticking_to_energy_without_recombination_corr
-    real(dp) :: XplusY_CO_core_mass_threshold
-    ! to save core-envelope bounday layer
-    real(dp) :: offset
-    real(dp) :: min_m_boundary, max_m_boundary
-    logical :: have_30_value, have_10_value, have_1_value, have_co_value
-    ! -------------------------------------
     type (star_info), pointer :: s
     ierr = 0
     call star_ptr(id, s, ierr)
     if (ierr /= 0) return
 
+    names(1) = 'Fe_core_infall_speed'
+    vals(1) = current_fe_core_infall
   end subroutine data_for_extra_history_columns
 
 
@@ -249,36 +245,40 @@ contains
   ! note: cannot request retry or backup; extras_check_model can do that.
   integer function extras_finish_step(id)
     integer, intent(in) :: id
-    integer :: ierr
+    integer :: ierr, k
+    real(dp) :: current_fe_core_infall,fe_core_infall_limit
     type (star_info), pointer :: s
     ierr = 0
     call star_ptr(id, s, ierr)
     if (ierr /= 0) return
     extras_finish_step = keep_going
 
-    if ((s% center_h1 < 1.0d-2) .and. (s% center_he4 < 1.0d-4) .and. (s% center_c12 < 2.0d-2)) then
-       if(s% x_logical_ctrl(1) .and. s% lxtra(11)) then !check for central carbon depletion, only in case we run single stars.
-          print *,  "*** Single star depleted carbon ***"
-          print *, "read inlist_to_CC"
-          call read_star_job(s, "inlist_to_cc", ierr)
-          if (ierr /= 0) then
-             print *, "Failed reading star_job in inlist_to_CC"
-             return
-          end if
-          print *, "read star_job from inlist_to_CC"
+    ! Initialize variables
+    k = 0
+    current_fe_core_infall = 0
+    fe_core_infall_limit = max(500d0,s% x_ctrl(1)) ! in case s% x_ctrl(1) is not read on restart.
+    ! exit condition for star #2
+    if (.not. s% x_logical_ctrl(1)) then ! stop
+       print *,  "*** Single star depleted carbon ***"
+       extras_finish_step = terminate
+    end if
 
-! v_flag doesn't get set when reading the starjob
-      call star_set_v_flag(id,.true.,ierr)
-!
-          call star_read_controls(id, "inlist_to_cc", ierr)
-          if (ierr /= 0) then
-             print *, "Failed reading controls in inlist_to_CC"
-             return
-          end if
-          print *, "read controls from inlist_to_CC"
-          s% lxtra(11) = .false. ! avoid re-entering here
-       else if (.not. s% x_logical_ctrl(1)) then ! stop
-          print *,  "*** Single star depleted carbon ***"
+!  Custom Fe core collapse condition from Mathieu Renzo.
+    if (s% fe_core_mass > 0.0d0) then
+       k = s% nz
+       do while (s% m(k) <= s% fe_core_mass * Msun)
+          k = k-1 ! loop outwards
+       end do
+       ! k is now the outer index of the fe core
+       current_fe_core_infall = min(0d0, minval(s%v(k:s%nz))/1d5)
+       write(*,*) 'fe_core_infall = ', - current_fe_core_infall, 'km/s'! (-)
+       write (*,*) 'fe_core_infall limit', fe_core_infall_limit, 'km/s'
+       if (- current_fe_core_infall >= fe_core_infall_limit) then
+          s% termination_code = t_fe_core_infall_limit
+          write(*, '(/,a,/, 99e20.10)') &
+               'stop because fe_core_infall > fe_core_infall_limit', &
+               - current_fe_core_infall,  fe_core_infall_limit
+          print *, "treshold v used", maxval(abs(s%v(k:s%nz)))
           extras_finish_step = terminate
        end if
     end if
