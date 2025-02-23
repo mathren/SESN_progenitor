@@ -62,15 +62,15 @@ atm_T_tau_opacity                               = 'fixed' ! next best is 'iterat
 
 
 hard_limit_for_rel_error_in_energy_conservation = -1d0
-use_superad_reduction                         = .true.
-! okay_to_reduce_gradT_excess                     = .true.
-! gradT_excess_f1                                 = 1d-4
-! gradT_excess_f2                                 = 1d-2
-! gradT_excess_lambda1                            = -1d0 ! full on
+! use_superad_reduction                         = .true. ! need to try MLT++ for binary evolution part
+okay_to_reduce_gradT_excess                     = .true.
+gradT_excess_f1                                 = 1d-4
+gradT_excess_f2                                 = 1d-2
+gradT_excess_lambda1                            = -1d0 ! full on
 
-! to continue after C depletion
+! to stop at C depletion
 x_logical_ctrl(1)                               = .true.
-max_model_number                                = 10500
+max_model_number                                = 10000 ! if true above, and the binary detaches, this will be overwritten in run_star_extras.f90
 redo_limit                                      = 300
 
 !wind
@@ -84,7 +84,7 @@ mdot_omega_power                                = 0.43d0
 MLT_option                                      = 'TDC'
 alpha_TDC_DAMPR                                 = 3d0 ! radiative dissipation !0d0 is default for mlt limit of TDC. 3 ~ henyey
 use_ledoux_criterion                            = .true.
-mixing_length_alpha                             = 2.0d0
+mixing_length_alpha                             = 1.5d0 !2.0d0
 alpha_semiconvection                            = 1.0d0 !1.0d0
 thermohaline_coeff                              = 666.0d0 !1.0d0
 ! thermohaline_option                           = 'Brown_Garaud_Stellmach_13'
@@ -93,15 +93,15 @@ thermohaline_coeff                              = 666.0d0 !1.0d0
 overshoot_scheme(1)                             = 'exponential'
 overshoot_zone_type(1)                          = 'any'
 overshoot_zone_loc(1)                           = 'core'
-overshoot_bdy_loc(1)                            = 'top'
+overshoot_bdy_loc(1)                            = 'any' !'top'
 overshoot_f(1)                                  = 4.15d-2
 overshoot_f0(1)                                 = 0.008d0
-Overshoot_scheme(2)                             = 'exponential'
-overshoot_zone_type(2)                          = 'any'
-overshoot_zone_loc(2)                           = 'core'
-overshoot_bdy_loc(2)                            = 'bottom'
-overshoot_f(2)                                  = 4.15d-3
-overshoot_f0(2)                                 = 0.008d-1
+! overshoot_scheme(2)                             = 'exponential'
+! overshoot_zone_type(2)                          = 'any'
+! overshoot_zone_loc(2)                           = 'core'
+! overshoot_bdy_loc(2)                            = 'bottom'
+! overshoot_f(2)                                  = 4.15d-3
+! overshoot_f0(2)                                 = 0.008d-1
 ! ------------------------------------------------Brott+11
 ! overshoot_scheme(1)                           = 'step'
 ! overshoot_zone_type(1)                        = 'any'

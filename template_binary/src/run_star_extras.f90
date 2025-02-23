@@ -81,8 +81,10 @@ contains
 
     if (.not. restart) then
        s% lxtra(1) = .true.  ! are we before carbon C depl?
-       s% lxtra(2) = .true.  ! do we still need to read inlist_to_CC?
     end if
+    ! this is always initialized to true, so that inlist_to_cc
+    ! gets re-read if needed, even if flag was previously flipped
+    s% lxtra(2) = .true.  ! do we still need to read inlist_to_CC?
   end subroutine extras_startup
 
 
@@ -95,37 +97,20 @@ contains
     if (ierr /= 0) return
     extras_start_step = 0
 
-
     !check for central carbon depletion, if continuing, read inlist_to_cc
     if (s% x_logical_ctrl(1) .and. &         ! want to continue? (se in inlist_both)
-        (s% lxtra(1) .eqv. .false.) .and. &  ! passed C depletion?
-        s% lxtra(2)) then                    ! already read inlist_to_cc?
+         (s% lxtra(1) .eqv. .false.) .and. &  ! passed C depletion?
+         s% lxtra(2)) then                    ! already read inlist_to_cc?
+       print *, "Reading inlist_to_cc ..."
        s% job% save_model_filename = "donor_cc.mod"
        s% job% required_termination_code_string = 'fe_core_infall_limit'
-       s% max_model_number = 15000
        call star_read_controls(id, "inlist_to_cc", ierr)
        if (ierr /= 0) then
-          print *, "... failed reading controls in inlist_to_cc"
-          return
+          call mesa_error(__FILE__, __LINE__, "... failed reading controls in inlist_to_cc")
        end if
        print *, "... successfully read controls from inlist_to_cc"
        s% lxtra(2) = .false. ! avoid re-entering
     end if
-
-  end subroutine extras_startup
-
-
-  integer function extras_start_step(id)
-    integer, intent(in) :: id
-    integer :: ierr
-    type (star_info), pointer :: s
-    ierr = 0
-    call star_ptr(id, s, ierr)
-    if (ierr /= 0) return
-    extras_start_step = 0
-
-
-
   end function extras_start_step
 
 
@@ -266,7 +251,7 @@ contains
 
 
 
-    ! ! custom Fe core collapse
+    ! custom Fe core collapse
     if (s% fe_core_mass >0.0d0) then
        !log more stuff in the terminal
        s% num_trace_history_values    = 5

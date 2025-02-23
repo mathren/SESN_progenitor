@@ -4,12 +4,11 @@
 
 &controls
 
-! stopping condition
-fe_core_infall_limit                            = 1d8  ! 5d7 ! 500 km/s infall.
+! stopping condition: reimplemented in extras_finish_step in run_star_extras
+fe_core_infall_limit                            = 5d7 ! 500 km/s infall.
 non_fe_core_infall_limit                        = 1d99 ! 5d7 ! km/s
 
 ! drag to prevent the development of radial pulses.
-! I turned this on above logT ~ 9.7 GK in this test, so the wave fro .
 use_drag_energy                                 = .false.
 drag_coefficient                                = 1d0
 min_q_for_drag                                  = 0.8d0
@@ -21,7 +20,7 @@ min_q_for_drag                                  = 0.8d0
 
 ! Turn off thermohaline and semiconvection
 thermohaline_coeff                              = 0
-alpha_semiconvection                            = 0d0 !1.0d0
+alpha_semiconvection                            = 0 ! 0.1d0 !1.0d0
 mlt_make_surface_no_mixing                      = .true.
 
 ! timesteps
@@ -33,10 +32,10 @@ min_timestep_factor                             = 0.8d0
 max_timestep_factor                             = 1.05d0
 timestep_factor_for_retries                     = 0.75
 
-limit_for_rel_error_in_energy_conservation      = -1!1d-7
-hard_limit_for_rel_error_in_energy_conservation = -1!1d-6
+! limit_for_rel_error_in_energy_conservation      = 100d0 !-1!1d-7
+! hard_limit_for_rel_error_in_energy_conservation = 100d0 !-1!1d-6
 
-never_skip_hard_limits                          = .true.
+never_skip_hard_limits                          = .false.
 min_xa_hard_limit                               = -1d-5
 min_xa_hard_limit_for_highT                     = -3d-5
 
@@ -79,33 +78,39 @@ dX_nuc_drop_max_A_limit                         = 70   ! try increasing beyond 6
 dX_nuc_drop_hard_limit                          = 1d99
 
 ! on fuel depletion
+delta_lg_XH_cntr_min                            = 0.5d0
+
+
 delta_lg_XH_cntr_max                            = 0.0d0
-delta_lg_XH_cntr_min                            = -2.0d0
+delta_lg_XH_cntr_min                            = 0.5d0
 delta_lg_XH_cntr_limit                          = 0.01d0
 delta_lg_XH_cntr_hard_limit                     = -1
 
 delta_lg_XHe_cntr_max                           = 0.0d0
-delta_lg_XHe_cntr_min                           = -2.0d0
+delta_lg_XHe_cntr_min                           = 0.5d0
 delta_lg_XHe_cntr_limit                         = 0.01d0
 delta_lg_XHe_cntr_hard_limit                    = -1
 
+delta_lg_XC_cntr_min                            = 0.5d0
 delta_lg_XC_cntr_hard_limit                     = -1
+
+delta_lg_XO_cntr_min                          = 0.5d0
 delta_lg_XO_cntr_hard_limit                     = -1
+
 delta_XSi_cntr_limit                            = 0.0025
 delta_XSi_cntr_hard_limit                       = -1!0.02
 
-! delta_lg_XH_cntr_min                          = 0.5d0
-! delta_lg_XO_cntr_min                          = 0.5d0
-! delta_lg_XC_cntr_min                          = 0.5d0
-! delta_lg_XHe_cntr_min                         = 0.5d0
 
 delta_Ye_highT_limit                            = 1d-3
+delta_lgL_nuc_limit                             = -1
 
+! burn_steps_limit = 150
+! burn_steps_hard_limit = 250
 
 ! mesh
 !max_dq                                         = 1d-3 ! or lower
-mesh_delta_coeff                                = 1.0d0 !1.5 EB ! try 1.0 or below in production run
-mesh_delta_coeff_for_highT                      = 1.0d0 !1.5 EB ! try 1.0 or below in production run
+mesh_delta_coeff                                = 1.5d0 ! try 1.0 or below in production run
+mesh_delta_coeff_for_highT                      = 1.5d0 ! try 1.0 or below in production run
 logT_max_for_standard_mesh_delta_coeff          = 9.0
 logT_min_for_highT_mesh_delta_coeff             = 9.5
 !min_dq_for_xa                                  = 1d-4 ! avoid over-resolving composition changes, bad for bit for bit convergence
@@ -121,7 +126,6 @@ log_tau_function_weight                         = 40
 max_surface_cell_dq                             = 1d0 !1d-12 is MESA default for hydrostatic models.
 
 ! solver tolerances
-
 energy_eqn_option                               = 'dedt'
 max_tries_for_implicit_wind                     = 0 ! Recommend 10 for a production run if doing wind.
 
@@ -159,18 +163,11 @@ sig_min_factor_for_high_Tcenter                 = 0.01
 Tcenter_min_for_sig_min_factor_full_on          = 3.2d9
 Tcenter_max_for_sig_min_factor_full_off         = 2.8d9
 
-num_trace_history_values                        = 5
-trace_history_value_name(1)                     = 'Fe_core'
-trace_history_value_name(2)                     = 'fe_core_infall'
-trace_history_value_name(3)                     = 'non_fe_core_infall'
-trace_history_value_name(4)                     = 'rel_E_err'
-trace_history_value_name(5)                     = 'log_rel_run_E_err'
-trace_history_value_name(6)                     = 'dt_div_max_tau_conv'
-
 ! output
 terminal_show_log_dt                            = .false.
 photo_interval                                  = 50 !1000
 
+max_model_number                                 = 15000
 ! debugging
 !report_solver_progress                         = .true. ! set true to see info about solver iterations
 !report_ierr                                    = .true. ! if true, produce terminal output when have some internal error
