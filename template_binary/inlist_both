@@ -9,7 +9,7 @@ show_timestep_limit_counts_when_terminate       = .true.
 
 change_net                                      = .true.
 change_initial_net                              = .true.
-new_net_name                                    =  'approx21_cr60_plus_co56.net' !"approx21_plus_co56.net" ! "mesa_128.net"
+new_net_name                                    =  "mesa_128.net" ! 'approx21_cr60_plus_co56.net' !"approx21_plus_co56.net" !
 
 ! change_rotation_flag                          = .true.
 ! change_initial_rotation_flag                  = .true.
@@ -33,6 +33,12 @@ save_pgstar_files_when_terminate                = .true.
 
 change_initial_Z                                = .true.
 ! value set in inlist_extra
+
+! these should be in inlist_to_cc, but reading from run_star_extras.f90 seems broken
+save_model_filename = "donor_cc.mod"
+required_termination_code_string = 'fe_core_infall_limit'
+
+
 
 / ! end of star_job namelist
 

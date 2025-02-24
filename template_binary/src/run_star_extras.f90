@@ -102,8 +102,6 @@ contains
          (s% lxtra(1) .eqv. .false.) .and. &  ! passed C depletion?
          s% lxtra(2)) then                    ! already read inlist_to_cc?
        print *, "Reading inlist_to_cc ..."
-       s% job% save_model_filename = "donor_cc.mod"
-       s% job% required_termination_code_string = 'fe_core_infall_limit'
        call star_read_controls(id, "inlist_to_cc", ierr)
        if (ierr /= 0) then
           call mesa_error(__FILE__, __LINE__, "... failed reading controls in inlist_to_cc")
