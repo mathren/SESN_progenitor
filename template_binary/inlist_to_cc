@@ -4,13 +4,26 @@
 
 &controls
 
+! split nuclear burning
+! Can be helpful to decrease op_split_burn_min_T
+! 4d9 has been well tested with the approx21 network
+! lower to 2.5d9 or worst case 1d9 for large networks to help with
+! numerical stability and speed, see MESA VI (Jermyn 2023)
+op_split_burn                                   = .true.
+op_split_burn_min_T                             = 4d9
+burn_steps_limit                                = 150
+burn_steps_hard_limit                           = 250
+op_split_burn_eps                               = 1d-5
+op_split_burn_odescal                           = 1d-5
+
+
 ! stopping condition: reimplemented in extras_finish_step in run_star_extras
 fe_core_infall_limit                            = 5d7 ! 500 km/s infall.
 non_fe_core_infall_limit                        = 1d99 ! 5d7 ! km/s
 
 ! drag to prevent the development of radial pulses.
 use_drag_energy                                 = .false.
-drag_coefficient                                = 1d0
+drag_coefficient                                = 0.9d0
 min_q_for_drag                                  = 0.8d0
 
 ! Turn off wind
@@ -18,10 +31,18 @@ min_q_for_drag                                  = 0.8d0
 ! cool_wind_RGB_scheme                          = ''
 ! cool_wind_AGB_scheme                          = ''
 
-! Turn off thermohaline and semiconvection
+! Turn off thermohaline
 thermohaline_coeff                              = 0
-alpha_semiconvection                            = 0 ! 0.1d0 !1.0d0
 mlt_make_surface_no_mixing                      = .true.
+
+! less overshooting
+overshoot_scheme(1)                             = 'exponential'
+overshoot_zone_type(1)                          = 'any'
+overshoot_zone_loc(1)                           = 'any'
+overshoot_bdy_loc(1)                            = 'any'
+overshoot_f(1)                                  = 0.005d0
+overshoot_f0(1)                                 = 0.001d0
+
 
 ! timesteps
 min_timestep_limit                              = 1d-20 !(seconds)
@@ -32,13 +53,14 @@ min_timestep_factor                             = 0.8d0
 max_timestep_factor                             = 1.05d0
 timestep_factor_for_retries                     = 0.75
 
-! limit_for_rel_error_in_energy_conservation      = 100d0 !-1!1d-7
-! hard_limit_for_rel_error_in_energy_conservation = 100d0 !-1!1d-6
+limit_for_rel_error_in_energy_conservation      = 100d0 !-1!1d-7
+hard_limit_for_rel_error_in_energy_conservation = 100d0 !-1!1d-6
 
-never_skip_hard_limits                          = .false.
+never_skip_hard_limits                          = .true.
 min_xa_hard_limit                               = -1d-5
 min_xa_hard_limit_for_highT                     = -3d-5
 
+! for evolving to cc, turn off hard limits and soften other limits
 delta_lgTeff_limit                              =  0.01
 delta_lgTeff_hard_limit                         =  -1
 
@@ -78,23 +100,20 @@ dX_nuc_drop_max_A_limit                         = 70   ! try increasing beyond 6
 dX_nuc_drop_hard_limit                          = 1d99
 
 ! on fuel depletion
-delta_lg_XH_cntr_min                            = 0.5d0
-
-
+delta_lg_XH_cntr_limit                          = 0.01d0
 delta_lg_XH_cntr_max                            = 0.0d0
 delta_lg_XH_cntr_min                            = 0.5d0
-delta_lg_XH_cntr_limit                          = 0.01d0
 delta_lg_XH_cntr_hard_limit                     = -1
 
+delta_lg_XHe_cntr_limit                         = 0.01d0
 delta_lg_XHe_cntr_max                           = 0.0d0
 delta_lg_XHe_cntr_min                           = 0.5d0
-delta_lg_XHe_cntr_limit                         = 0.01d0
 delta_lg_XHe_cntr_hard_limit                    = -1
 
 delta_lg_XC_cntr_min                            = 0.5d0
 delta_lg_XC_cntr_hard_limit                     = -1
 
-delta_lg_XO_cntr_min                          = 0.5d0
+delta_lg_XO_cntr_min                            = 0.5d0
 delta_lg_XO_cntr_hard_limit                     = -1
 
 delta_XSi_cntr_limit                            = 0.0025
@@ -103,9 +122,6 @@ delta_XSi_cntr_hard_limit                       = -1!0.02
 
 delta_Ye_highT_limit                            = 1d-3
 delta_lgL_nuc_limit                             = -1
-
-! burn_steps_limit = 150
-! burn_steps_hard_limit = 250
 
 ! mesh
 !max_dq                                         = 1d-3 ! or lower
@@ -167,7 +183,7 @@ Tcenter_max_for_sig_min_factor_full_off         = 2.8d9
 terminal_show_log_dt                            = .false.
 photo_interval                                  = 50 !1000
 
-max_model_number                                 = 15000
+max_model_number                                = 15000
 ! debugging
 !report_solver_progress                         = .true. ! set true to see info about solver iterations
 !report_ierr                                    = .true. ! if true, produce terminal output when have some internal error

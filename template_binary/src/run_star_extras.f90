@@ -111,6 +111,12 @@ contains
        print *, "... successfully read controls from inlist_to_cc"
        s% lxtra(2) = .false. ! avoid re-entering
     end if
+
+    ! we need to relax operator splitting minT after Si burning, to ease core-collapse.
+    if (s% center_si28 <1d-3) then
+      s% op_split_burn_min_T = 2.8d9
+    end if
+
   end function extras_start_step
 
 
@@ -138,7 +144,7 @@ contains
     ierr = 0
     call star_ptr(id, s, ierr)
     if (ierr /= 0) return
-    how_many_extra_history_columns = 0
+    how_many_extra_history_columns = 1
   end function how_many_extra_history_columns
 
 
@@ -148,10 +154,25 @@ contains
     character (len=maxlen_history_column_name) :: names(n)
     real(dp) :: vals(n)
     integer, intent(out) :: ierr
+    integer :: k
     type (star_info), pointer :: s
     ierr = 0
     call star_ptr(id, s, ierr)
     if (ierr /= 0) return
+
+    names(1) = 'fe_core_infall_speed_kms'
+
+    k = 0
+    if (s% fe_core_mass > 0.0d0) then
+       k = s% nz
+       do while (s% m(k) <= s% fe_core_mass * Msun)
+          k = k-1 ! loop outwards
+       end do
+        ! We multiply by -1, since v is negative. This yields a positive infall speed in km/s.
+        vals(1) = - min(0d0, minval(s%v(k:s%nz))/1d5)
+     else
+        vals(1) = 0d0
+     end if
 
   end subroutine data_for_extra_history_columns
 
@@ -276,9 +297,6 @@ contains
           extras_finish_step = terminate
        end if
     end if
-
-
-
 
     if (extras_finish_step == terminate) s% termination_code = t_extras_finish_step
   end function extras_finish_step
