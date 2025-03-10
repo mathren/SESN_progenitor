@@ -183,7 +183,7 @@ Tcenter_max_for_sig_min_factor_full_off         = 2.8d9
 terminal_show_log_dt                            = .false.
 photo_interval                                  = 50 !1000
 
-max_model_number                                = 15000
+max_model_number                                = 50000
 ! debugging
 !report_solver_progress                         = .true. ! set true to see info about solver iterations
 !report_ierr                                    = .true. ! if true, produce terminal output when have some internal error
