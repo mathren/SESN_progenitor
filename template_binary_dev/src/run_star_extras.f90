@@ -122,15 +122,21 @@ contains
           s% lxtra(11) = .false. ! avoid re-entering here
        end if
 
-       s% pg% read_extra_pgstar_inlist(1) = .true.
-       s% pg% extra_pgstar_inlist_name(1) = 'inlist_pgstar_to_cc'
-       b% job% pgbinary_flag = .false.
+       !s% pg% Grid2_plot_name(4) = 'TRho' ! as opposed to 'History_Panels1'
+
+       !b% job% pgbinary_flag = .false.
+       !call read_pgstar_inlist(s,'inlist_pgstar_to_cc', ierr)
 
     end if
 
     ! we need to relax operator splitting minT after Si burning, to ease core-collapse.
     if (s% center_si28 <1d-3) then
       s% op_split_burn_min_T = 2.8d9
+      !s% use_momentum_outer_BC = .true. ! switch to momentum outer BC.
+      !s% drag_coefficient = 0d0
+      !s% min_q_for_drag = 0.8d0
+      !s% Pextra_factor = 1d0
+      s% min_dq = 1d-10 ! consider lowering resolution at surface
     end if
 
   end function extras_start_step

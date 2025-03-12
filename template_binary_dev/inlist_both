@@ -46,7 +46,7 @@ initial_model_number = 0
 ! set_omega_div_omega_crit = .true.
 ! set_initial_omega_div_omega_crit = .true.
 
-pgstar_flag = .false.
+pgstar_flag = .true.
 
 change_initial_Z = .true.
 new_Z = 0.02d0
@@ -178,10 +178,10 @@ include_composition_in_eps_grav = .true.
 
 
 ! space
-!max_dq = 1d-3 ! uncomment in a full run.
+max_dq = 2d-3!1d-3 ! uncomment in a full run.
 max_allowed_nz = 50000
-mesh_delta_coeff = 2d0
-mesh_delta_coeff_for_highT = 1.5d0 !1.5 ! try 1.0 or below in production run
+mesh_delta_coeff = 1d0
+mesh_delta_coeff_for_highT = 1d0 !1.5 ! try 1.0 or below in production run
 logT_max_for_standard_mesh_delta_coeff = 9.0 
 logT_min_for_highT_mesh_delta_coeff = 9.5 
 
@@ -225,16 +225,16 @@ delta_lgTeff_hard_limit = 0.01d0
 
 ! Recommend decreasing all three Rho, T, Tmax 
 ! to 1d-3 or lower in production runs
-delta_lgRho_cntr_limit = 1d-2 !0.03 ! 1d-3
+delta_lgRho_cntr_limit = 2.5d-3 !0.03 ! 1d-3
 delta_lgRho_cntr_hard_limit = 0.1
 delta_lgRho_limit = 0.1 
       
 delta_lgT_cntr_limit_only_after_near_zams = .true.
-delta_lgT_cntr_limit = 1d-2 !0.002  ! 1d-3
+delta_lgT_cntr_limit = 2d-3 !0.002  ! 1d-3
 delta_lgT_cntr_hard_limit = 0.1 
 
 delta_lgT_max_limit_only_after_near_zams = .true.
-delta_lgT_max_limit = 1d-2 !0.002   ! 1d-3  
+delta_lgT_max_limit = 2d-3 !0.002   ! 1d-3  
 delta_lgT_max_hard_limit = 0.1
 
 delta_lgT_limit = 0.025d0         ! default 0.5

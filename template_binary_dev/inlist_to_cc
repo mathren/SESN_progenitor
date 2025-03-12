@@ -73,13 +73,15 @@ delta_lgL_nuc_limit = -1
 ! if splitting error is an issue, you can relax the below three items to -1. 
 delta_lgT_cntr_hard_limit = 0.1 
 delta_lgT_max_hard_limit = 0.1
-delta_lgRho_limit = 0.1 
+delta_lgRho_hard_limit = 0.1 
 
 
 ! stopping condition
 fe_core_infall_limit = 1d99!5d7 ! 500 km/s infall.
 !non_fe_core_infall_limit = 500 ! km/s
 x_ctrl(1) = 500d0 ! 500 km/s infall. custom infall condition in run_star_extras.
+
+
 
 ! Suggested by Jim Fuller, can be useful for convergence see also (Farag et al. 2022).
 set_min_D_mix = .true.
@@ -90,7 +92,7 @@ min_D_mix = 1d-2
 ! lower to 2.5d9 or worst case 1d9 for large networks to help with
 ! numerical stability and speed, see MESA VI (Jermyn 2023)
 op_split_burn = .true.
-op_split_burn_min_T = 2.8d9
+op_split_burn_min_T = 4d9
 burn_steps_limit = 150
 burn_steps_hard_limit = 250
 op_split_burn_eps = 1d-5 !1d-7 ! default is 1d-5
@@ -118,15 +120,26 @@ atm_option = 'T_tau'
 atm_T_tau_relation = 'Eddington'
 atm_T_tau_opacity = 'fixed' ! next best is 'iterated'
 
+! during advanced burning, a hydrodynamic BC is more stable.
+!use_momentum_outer_BC = .true. ! turned on at si depletion in src.
+!use_compression_outer_BC = .true.
+
+! hack for not over resolving the surface
+! center cell dq is ~ 1e-8, so can limit the surface down to 1d-10
+!min_dq = 1d-10 ! default is 1d-14
+
+! important for preventing huge energy deposition in small
+! cell at the surface from an incoming wave.
+max_surface_cell_dq = 1d0 !1d-12 is MESA default for hydrostatic models.
+
 
 ! mlt convection model
-
 MLT_option                                = 'TDC'
-alpha_TDC_DAMPR = 3d0 ! radiative dissipation !0d0 is default for mlt limit of TDC. 3 ~ henyey
+!alpha_TDC_DAMPR = 0d0 ! radiative dissipation !0d0 is default for mlt limit of TDC. 3 ~ henyey
 mixing_length_alpha                       = 1.5d0
 
 use_ledoux_criterion                      = .true.
-alpha_semiconvection                      = 0.1d0
+alpha_semiconvection                      = 1d0
 semiconvection_option = 'Langer_85 mixing; gradT = gradr'
 thermohaline_option = 'Kippenhahn'
 thermohaline_coeff = 0
@@ -137,7 +150,7 @@ mlt_make_surface_no_mixing = .true.
 ! superadiabatic convection routines, it's a choice:
 
 ! superadiabatic reduction, implicit, new
- use_superad_reduction = .true.
+ use_superad_reduction = .false.
  superad_reduction_Gamma_limit = 0.5d0 ! default is 0.5d0
  superad_reduction_Gamma_limit_scale = 5d0
  superad_reduction_Gamma_inv_scale = 5d0
@@ -145,7 +158,7 @@ mlt_make_surface_no_mixing = .true.
  superad_reduction_limit = -1d0
 
 ! MLT ++, explicit, well tested
-okay_to_reduce_gradT_excess = .false.
+okay_to_reduce_gradT_excess = .true.
 gradT_excess_f1 = 1d-4
 gradT_excess_f2 = 1d-2
 gradT_excess_lambda1 = -1d0 ! full on
@@ -174,14 +187,14 @@ never_skip_hard_limits = .true. ! this can bomb a run.
 min_xa_hard_limit = -1d-5
 min_xa_hard_limit_for_highT = -3d-5
 
-delta_lgTeff_limit =  0.01
+delta_lgTeff_limit =  1d-1!0.01
 delta_lgL_limit = 0.1
 delta_lgL_He_limit = 0.1
 delta_lgR_limit = 1d-2 
 
-! tighten to 1d-3 in a production run.
-delta_lgT_cntr_limit = 0.002
-delta_lgT_max_limit = 0.002
+! tighten to 1d-3 in a production run. See inlist_both.
+!delta_lgT_cntr_limit = 0.002
+!delta_lgT_max_limit = 0.002
 
 dX_div_X_limit(2) = -1 ! for he4
 
@@ -200,9 +213,15 @@ R_function3_weight = 40
 M_function_weight = 40
 log_tau_function_weight = 40
 
-! important for preventing huge energy deposition in small
-! cell at the surface from an incoming wave.
-max_surface_cell_dq = 1d0 !1d-12 is MESA default for hydrostatic models.
+
+! Fixing the position of the Lagrangian region of the mesh helps
+! convergence near the Eddington limit
+max_logT_for_k_below_const_q = 100
+max_q_for_k_below_const_q = 0.99
+min_q_for_k_below_const_q = 0.99
+max_logT_for_k_const_mass = 100
+max_q_for_k_const_mass = 0.98
+min_q_for_k_const_mass = 0.98
 
 
 ! solver tolerances
