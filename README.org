@@ -8,7 +8,10 @@ B (post donor-main-sequence) fully conservative mass transfer until
 carbon core depletion and core-collapse.
 
 Originally developed for [[https://ui.adsabs.harvard.edu/abs/2021ApJ...923..277R/abstract][Renzo et al. 2021]], [[https://ui.adsabs.harvard.edu/abs/2023ApJ...942L..32R/abstract][2023]], ported to MESA
-=r24.03.1= or later by [[https://github.com/neevshah101][@neevshah101]].
+=r24.03.1= or later by [[https://github.com/neevshah101][@neevshah101]]. The post-carbon depletion evolution
+(see below) is based on a template inlist provided by [[https://github.com/Debraheem][@Debraheem]].
+These have been iterated upon by trial-and-error until a viable model
+runs.
 
 ** Note on evolution beyond C depletion
 
