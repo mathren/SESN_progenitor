@@ -49,6 +49,8 @@ initial_model_number = 0
 pgstar_flag = .false.
 
 change_initial_Z = .true.
+new_Z = 0.02d0
+
 ! value set in inlist_extra
 
 / ! end of star_job namelist
