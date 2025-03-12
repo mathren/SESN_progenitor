@@ -3,9 +3,6 @@
 read_extra_star_job_inlist(1) = .true.
 extra_star_job_inlist_name(1) = 'inlist_both'
 
-read_extra_star_job_inlist(2) = .true.
-extra_star_job_inlist_name(2) = 'inlist_extra'
-
 save_model_filename = 'accretor_final.mod'
 
 pgstar_flag = .true.
@@ -17,10 +14,6 @@ pgstar_flag = .true.
 read_extra_eos_inlist(1) = .true.
 extra_eos_inlist_name(1) = 'inlist_both'
 
-
-read_extra_eos_inlist(2) = .true.
-extra_eos_inlist_name(2) = 'inlist_extra'
-
 / ! end of eos namelist
 
 
@@ -28,8 +21,6 @@ extra_eos_inlist_name(2) = 'inlist_extra'
 read_extra_kap_inlist(1) = .true.
 extra_kap_inlist_name(1) = 'inlist_both'
 
-read_extra_kap_inlist(2) = .true.
-extra_kap_inlist_name(2) = 'inlist_extra'
 / ! end of kap namelist
 
 
@@ -37,9 +28,6 @@ extra_kap_inlist_name(2) = 'inlist_extra'
 
 read_extra_controls_inlist(1) = .true.
 extra_controls_inlist_name(1) = 'inlist_both'
-
-read_extra_controls_inlist(2) = .true.
-extra_controls_inlist_name(2) = 'inlist_extra'
 
 ! extra_terminal_output_file = 'log2'
 log_directory = 'LOGS2'
@@ -66,9 +54,9 @@ delta_HR_ds_Teff = 1d-5
 ! delta_HR_limit = 0.5
 ! delta_HR_hard_limit = 1
 
-max_num_profile_models = 100000
-profile_interval = 100
-photo_interval = 500
+!max_num_profile_models = 100000
+!profile_interval = 100
+!photo_interval = 500
 
 
 / ! end of controls namelist

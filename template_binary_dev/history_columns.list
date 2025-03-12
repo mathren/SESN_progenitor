@@ -652,8 +652,8 @@
       !add_log_surface_abundances
 
       ! individual surface mass fractions (as many as desired)
-      !surface h1
-      !surface he4
+      surface h1
+      surface he4
       surface c12
       surface o16
       ! etc.
@@ -1068,4 +1068,4 @@
 
    !## Extras
       burning_regions 80
-      mixing_regions 40
+      mixing_regions 80

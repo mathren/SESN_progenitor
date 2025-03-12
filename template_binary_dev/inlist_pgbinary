@@ -16,7 +16,7 @@ Orbit_win_width = 8
 
 Grid1_win_flag = .true.
 
-Grid1_win_width = 19
+Grid1_win_width = 13
 Grid1_win_aspect_ratio = 0.58
 
 Grid1_xleft = 0.0
@@ -96,7 +96,7 @@ Grid1_plot_pad_top(4) = 0.00
 Grid1_txt_scale_factor(4) = 0.4
 
 Grid1_file_flag = .true.
-Grid1_file_interval = 10
-Grid1_file_width = -1
+Grid1_file_interval = 1
+Grid1_file_width = 27
 Grid1_file_aspect_ratio = -1
 / ! end of pgbinary namelist

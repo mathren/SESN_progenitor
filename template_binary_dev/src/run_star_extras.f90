@@ -87,10 +87,14 @@ contains
 
 
   integer function extras_start_step(id)
+    use binary_def
     integer, intent(in) :: id
     integer :: ierr
+    integer :: binary_id
     type (star_info), pointer :: s
+    type (binary_info), pointer :: b
     ierr = 0
+    call binary_ptr(binary_id, b, ierr)
     call star_ptr(id, s, ierr)
     if (ierr /= 0) return
     extras_start_step = 0
@@ -107,7 +111,7 @@ contains
           print *, "read star_job from inlist_to_CC"
 
     ! v_flag doesn't get set when reading the starjob
-      call star_set_v_flag(id,.true.,ierr)
+    !  call star_set_v_flag(id,.true.,ierr)
     !
           call star_read_controls(id, "inlist_to_cc", ierr)
           if (ierr /= 0) then
@@ -117,6 +121,11 @@ contains
           print *, "read controls from inlist_to_CC"
           s% lxtra(11) = .false. ! avoid re-entering here
        end if
+
+       s% pg% read_extra_pgstar_inlist(1) = .true.
+       s% pg% extra_pgstar_inlist_name(1) = 'inlist_pgstar_to_cc'
+       b% job% pgbinary_flag = .false.
+
     end if
 
     ! we need to relax operator splitting minT after Si burning, to ease core-collapse.

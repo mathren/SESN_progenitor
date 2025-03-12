@@ -235,7 +235,7 @@ delta_lgT_max_hard_limit = 0.1
 
 delta_lgT_limit = 0.025d0         ! default 0.5
 delta_lgRho_limit = 0.5d0          ! default 1.0
-delta_lgL_nuc_limit = 1d-2
+!delta_lgL_nuc_limit = 1d-2
 
 delta_lgL_He_limit = 0.01d0
 delta_lgL_He_hard_limit = 0.025d0

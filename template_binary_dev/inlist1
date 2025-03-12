@@ -3,8 +3,7 @@
 read_extra_star_job_inlist(1) = .true.
 extra_star_job_inlist_name(1) = 'inlist_both'
 
-read_extra_star_job_inlist(2) = .true.
-extra_star_job_inlist_name(2) = 'inlist_extra'
+
 
 save_model_filename = 'donor_final.mod'
 
@@ -16,8 +15,7 @@ pgstar_flag = .true.
 read_extra_eos_inlist(1) = .true.
 extra_eos_inlist_name(1) = 'inlist_both'
 
-read_extra_eos_inlist(2) = .true.
-extra_eos_inlist_name(2) = 'inlist_extra'
+
 
 
 / ! end of eos namelist
@@ -27,8 +25,7 @@ extra_eos_inlist_name(2) = 'inlist_extra'
 read_extra_kap_inlist(1) = .true.
 extra_kap_inlist_name(1) = 'inlist_both'
 
-read_extra_kap_inlist(2) = .true.
-extra_kap_inlist_name(2) = 'inlist_extra'
+
 
 / ! end of kap namelist
 
@@ -38,9 +35,6 @@ extra_kap_inlist_name(2) = 'inlist_extra'
 read_extra_controls_inlist(1) = .true.
 extra_controls_inlist_name(1) = 'inlist_both'
 
-
-read_extra_controls_inlist(2) = .true.
-extra_controls_inlist_name(2) = 'inlist_extra'
 
 ! set this to .true. to continue post-C depl with a single star
 ! otherwise see stopping condition in inlist_both or run_star_extras.f
@@ -52,9 +46,9 @@ log_directory = 'LOGS1'
 write_header_frequency = 3
 
 ! output
-max_num_profile_models = 100
-profile_interval = 1000
-photo_interval = 500
+!max_num_profile_models = 100
+!profile_interval = 1000
+!photo_interval = 500
 
 
 / ! end of controls namelist

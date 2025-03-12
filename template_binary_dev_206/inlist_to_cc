@@ -271,17 +271,11 @@ sig_min_factor_for_high_Tcenter = 0.01
 Tcenter_min_for_sig_min_factor_full_on = 3.2d9
 Tcenter_max_for_sig_min_factor_full_off = 2.8d9
 
-num_trace_history_values = 6
+num_trace_history_values = 4
 trace_history_value_name(1) = 'Fe_core'
 trace_history_value_name(2) = 'rel_E_err'
 trace_history_value_name(3) = 'log_rel_run_E_err'
 trace_history_value_name(4) = 'dt_div_max_tau_conv'
-
-! we use a custom infall condition in run_star_extras instead.
-! See extras_finish_step
-!trace_history_value_name(2) = 'fe_core_infall' 
-!trace_history_value_name(3) = 'non_fe_core_infall'
-
 
 
 ! output

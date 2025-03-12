@@ -4,6 +4,12 @@
 &star_job
 show_log_description_at_start = .false.
 
+! local directories data
+      mesa_dir =''
+      eosDT_cache_dir      = './eosDT_cache'
+      kap_cache_dir        = './kap_cache'
+      rate_tables_dir      = './rate_tables'
+      rates_cache_dir      = './rates_cache'
 
 load_saved_model = .true.
 load_model_filename = 'donor_final.mod'
@@ -13,15 +19,19 @@ save_model_filename = 'CC.mod'
 !required_termination_code_string = 'fe_core_infall_limit'
 
 
-change_net = .true.
-new_net_name = 'approx21_cr60_plus_co56.net'
-dump_missing_metals_into_heaviest = .false.
+!change_net = .true.
+!new_net_name = 'approx21_cr60_plus_co56.net'
+!dump_missing_metals_into_heaviest = .false.
 
 ! Example ccsn network for properly capturing the energy generation rate during all stages
 ! requires users to lower op_split_burn_min_T threshold for decoupling.
 !change_net_net = .true.
 !new_net_name = 'mesa_206.net'
 !dump_missing_metals_into_heaviest = .false.
+
+! we want to use weaklib all the time, so we toggle at lowT.
+T9_weaklib_full_off = 0.0001d0
+T9_weaklib_full_on = 0.00011d0
 
 ! turn on hydrodynamics
 change_v_flag = .true.
@@ -59,7 +69,11 @@ delta_lg_XC_cntr_hard_limit = -1
 delta_lg_XO_cntr_hard_limit = -1
 delta_lgL_He_hard_limit = -1
 delta_lgL_H_hard_limit = -1
-delta_lgL_nuc_limit = -1 
+delta_lgL_nuc_limit = -1
+! if splitting error is an issue, you can relax the below three items to -1. 
+delta_lgT_cntr_hard_limit = 0.1 
+delta_lgT_max_hard_limit = 0.1
+delta_lgRho_limit = 0.1 
 
 
 ! stopping condition
@@ -76,21 +90,25 @@ min_D_mix = 1d-2
 ! lower to 2.5d9 or worst case 1d9 for large networks to help with
 ! numerical stability and speed, see MESA VI (Jermyn 2023)
 op_split_burn = .true.
-op_split_burn_min_T = 4d9
+op_split_burn_min_T = 2.8d9
 burn_steps_limit = 150
 burn_steps_hard_limit = 250
-op_split_burn_eps = 1d-5 ! default
-op_split_burn_odescal = 1d-5 ! default
+op_split_burn_eps = 1d-5 !1d-7 ! default is 1d-5
+op_split_burn_odescal = 1d-5!1d-8 !default is 1d-5
 
+! see run_star_extras.f90
+! we need to relax operator splitting minT after Si burning, to ease core-collapse.
+!if (s% center_si28 <1d-3) then
+!  s% op_split_burn_min_T = 2.8d9
+!end if
 
 ! drag to prevent the development of radial pulses.
-! I turned this on above logT ~ 9.7 GK in this test, so the wave fro .
 use_drag_energy = .false.
 drag_coefficient = 0.9d0
 min_q_for_drag = 0.8d0
 
 ! wind
-! no winds in this.
+! no winds in this. see inlist_both
 
 ! atmosphere
 ! if you run into issues, you can increase Pextra
@@ -161,42 +179,11 @@ delta_lgL_limit = 0.1
 delta_lgL_He_limit = 0.1
 delta_lgR_limit = 1d-2 
 
-
-! Recommend decreasing all three Rho, T, Tmax
-! to 1d-3 or lower in production runs
-delta_lgRho_cntr_limit = 5d-3!0.03
-delta_lgRho_cntr_hard_limit = -1!0.1 ! this can crash the model, lower time_steps instead.
-delta_lgRho_limit = 0.1
-
-delta_lgT_cntr_limit_only_after_near_zams = .true.
+! tighten to 1d-3 in a production run.
 delta_lgT_cntr_limit = 0.002
-delta_lgT_cntr_hard_limit = 0.1
-
-delta_lgT_max_limit_only_after_near_zams = .true.
 delta_lgT_max_limit = 0.002
-delta_lgT_max_hard_limit = 0.1
 
 dX_div_X_limit(2) = -1 ! for he4
-
-! On the changes in total abundance of each isotope
-! one of the most useful timestep controls, period
-dX_nuc_drop_limit = 2d-2 ! Recommend decreasing to 1d-3 or lower in a production run
-dX_nuc_drop_limit_at_high_T = 2d-2  ! default = -1 = same as dX_nuc_drop_limit
-dX_nuc_drop_min_X_limit = 1d-3 ! try decreasing to 1d-4 or 1d-5 in a production run
-dX_nuc_drop_max_A_limit = 70   ! try increasing beyond 60 in a big network run
-dX_nuc_drop_hard_limit = 1d99
-
-! on fuel depletion
-delta_lg_XH_cntr_limit = 0.01d0
-delta_lg_XH_cntr_max   = 0.0d0
-delta_lg_XH_cntr_min   = -2.0d0
-!delta_lg_XH_cntr_hard_limit = 0.02d0
-
-delta_lg_XHe_cntr_limit = 0.01d0
-delta_lg_XHe_cntr_max   = 0.0d0
-delta_lg_XHe_cntr_min   = -2.0d0
-!delta_lg_XHe_cntr_hard_limit = -1!0.02d0
-
 
 delta_XSi_cntr_hard_limit = -1!0.02
 delta_XSi_cntr_limit = 0.0025
@@ -207,16 +194,7 @@ delta_lg_XHe_cntr_min   = 0.5d0
 
 delta_Ye_highT_limit = 1d-3
 
-
-! mesh
-!max_dq= 1d-3 ! or lower
-mesh_delta_coeff = 1.5 ! try 1.0 or below in production run
-mesh_delta_coeff_for_highT = 1.5 ! try 1.0 or below in production run
-logT_max_for_standard_mesh_delta_coeff = 9.0
-logT_min_for_highT_mesh_delta_coeff = 9.5
-!min_dq_for_xa = 1d-4 ! avoid over-resolving composition changes, bad for bit for bit convergence
-!remesh_dt_limit = 1728000 ! 20 days. turn off remesh when dt smaller than this
-
+! mesh, other defaults are in inlist_both.
 R_function_weight = 40
 R_function3_weight = 40
 M_function_weight = 40
@@ -226,10 +204,10 @@ log_tau_function_weight = 40
 ! cell at the surface from an incoming wave.
 max_surface_cell_dq = 1d0 !1d-12 is MESA default for hydrostatic models.
 
+
 ! solver tolerances
 
 energy_eqn_option = 'dedt'
-max_tries_for_implicit_wind = 0 ! Recommend 10 for a production run if doing wind.
 
 ! damped newton and structure only
 scale_max_correction = 0.1d0
@@ -254,7 +232,6 @@ gold2_tol_max_residual3 = 5d-4
 
 max_abs_rel_run_E_err = 1d-2 ! maximum energy error before model is terminated.
 
-
 !defaults
 when_to_stop_rtol = 1d-3
 when_to_stop_atol = 1d-3
@@ -266,18 +243,11 @@ sig_min_factor_for_high_Tcenter = 0.01
 Tcenter_min_for_sig_min_factor_full_on = 3.2d9
 Tcenter_max_for_sig_min_factor_full_off = 2.8d9
 
-num_trace_history_values = 6
+num_trace_history_values = 4
 trace_history_value_name(1) = 'Fe_core'
 trace_history_value_name(2) = 'rel_E_err'
 trace_history_value_name(3) = 'log_rel_run_E_err'
 trace_history_value_name(4) = 'dt_div_max_tau_conv'
-
-! we use a custom infall condition in run_star_extras instead.
-! See extras_finish_step
-!trace_history_value_name(2) = 'fe_core_infall' 
-!trace_history_value_name(3) = 'non_fe_core_infall'
-
-
 
 ! output
 terminal_show_log_dt = .false.
@@ -299,6 +269,9 @@ report_solver_progress = .false. ! set true to see info about solver iterations
 
 /
 &pgstar
+
+read_extra_pgstar_inlist(1) = .true.
+extra_pgstar_inlist_name(1) = 'inlist_pgstar_to_cc'
 
 !pause = .true.
 
