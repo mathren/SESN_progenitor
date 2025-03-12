@@ -21,7 +21,7 @@ load_saved_model = .false.
 
 change_net = .true.
 change_initial_net = .true.
-new_net_name = 'approx21_cr60_plus_co56' ! "approx21_plus_co56.net" ! "mesa_128.net"
+new_net_name = 'approx21_cr60_plus_co56.net' ! "approx21_plus_co56.net" ! "mesa_128.net"
 !new_net_name            = 'mesa_206.net'
 !dump_missing_metals_into_heaviest = .true.
 
