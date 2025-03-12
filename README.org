@@ -1,4 +1,6 @@
-#+title: MESA files to produce a Stripped Envelope Supernova
+#+title: MESA setup for Stripped Envelope Supernova Progenitor
+
+Developed for the [[https://kasukabedefenceforce.github.io/tardis-con/2025][TARDIS connector workshop 2025]] at CCA/Flatiron.
 
 The setup template is in [[./template_binary]]. It computes the evolution
 of a 15M_{\odot} donor star + 12M_{\odot} point-mass companion through case
@@ -8,7 +10,7 @@ carbon core depletion and core-collapse.
 Originally developed for [[https://ui.adsabs.harvard.edu/abs/2021ApJ...923..277R/abstract][Renzo et al. 2021]], [[https://ui.adsabs.harvard.edu/abs/2023ApJ...942L..32R/abstract][2023]], ported to MESA
 =r24.03.1= or later by [[https://github.com/neevshah101][@neevshah101]].
 
-** Note on C depletion
+** Note on evolution beyond C depletion
 
 At carbon depletion ($X_{center}(^{12}C)_{} <0.01$) the =run_star_extras.f90=
 reads a =star_job= and =controls= from an whose path is *hard coded*, right
@@ -17,11 +19,19 @@ now it's either [[./template_binary/inlist_to_cc][inlist_to_cc]] or [[./template
 This allows to switch "on-the-fly" some options to make the star reach
 the onset of core collapse.
 
-** TODO
+The =binary_template= with a small network (22 isotopes, on the =main= branch) takes \sim5000
+steps to reach carbon depletion with MESA =r24.08.1=.
 
-- [ ] test it reaches onset of core-collapse with MESA =r24.08.1=
-- [ ] check CPUh cost
-- [ ] save post-RLOF model (should already be done out of the box) as
-  re-starting point
-- [X] trim output
-- [ ] make =inlist_to_cc= an inlist-controllable variable
+As usual, most computing time is spent post-carbon depletion. This
+model uses =use_drag = .true.= post-carbon depletion to successfully go
+to core-collapse without spurious envelope velocities. It also uses
+=op_split = .true.= for T\ge4\times10^{9} K, and changes overshooting parameters
+for late burning (this has been found to be necessary through a
+non-systematic but extensive experimentation).
+
+** TODO
+- test it reaches onset of core-collapse with MESA =r24.08.1=
+  - [X] 22 iso network
+  - [ ] large network (work in progress in separate folder/branches)
+- [ ] check CPUh cost: \sim 3h on 12 cores
+- [ ] trim output for I/O speedup
