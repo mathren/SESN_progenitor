@@ -132,11 +132,12 @@ contains
     ! we need to relax operator splitting minT after Si burning, to ease core-collapse.
     if (s% center_si28 <1d-3) then
       s% op_split_burn_min_T = 2.8d9
+      s% use_compression_outer_BC = .true.
       !s% use_momentum_outer_BC = .true. ! switch to momentum outer BC.
       !s% drag_coefficient = 0d0
       !s% min_q_for_drag = 0.8d0
       !s% Pextra_factor = 1d0
-      s% min_dq = 1d-10 ! consider lowering resolution at surface
+      !s% min_dq = 1d-10!1d-8 ! consider lowering resolution at surface
     end if
 
   end function extras_start_step
