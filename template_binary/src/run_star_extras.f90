@@ -92,6 +92,8 @@ contains
     integer, intent(in) :: id
     integer :: ierr
     type (star_info), pointer :: s
+	character (len=200) :: fname
+
     ierr = 0
     call star_ptr(id, s, ierr)
     if (ierr /= 0) return
@@ -102,8 +104,10 @@ contains
          (s% lxtra(1) .eqv. .false.) .and. &  ! passed C depletion?
          s% lxtra(2)) then                    ! already read inlist_to_cc?
        print *, "Reading inlist_to_cc ..."
-       s% job% save_model_filename = "donor_cc.mod"
+       s% job% save_model_filename = "donor_cc_old.mod"
        s% job% required_termination_code_string = 'fe_core_infall_limit'
+       write(fname, fmt="(a12)") 'donor_cc.mod'
+       call star_write_model(id, fname, ierr)
        call star_read_controls(id, "inlist_to_cc", ierr)
        if (ierr /= 0) then
           call mesa_error(__FILE__, __LINE__, "... failed reading controls in inlist_to_cc")
