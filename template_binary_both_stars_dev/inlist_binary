@@ -12,7 +12,7 @@ pgbinary_flag = .true.
 
 m1 = 15.0d0  ! donor mass in Msun
 m2 = 12.0d0 ! companion mass in Msun
-initial_period_in_days = 3.0d0
+initial_period_in_days = 20.0d0
 
 limit_retention_by_mdot_edd = .false. ! this is for BH secondaries
 mass_transfer_alpha = 0.0d0
