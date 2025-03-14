@@ -1,11 +1,11 @@
 &star_job
 
 ! local directories data
-      mesa_dir =''
-      eosDT_cache_dir      = './eosDT_cache'
-      kap_cache_dir        = './kap_cache'
-      rate_tables_dir      = './rate_tables'
-      rates_cache_dir      = './rates_cache'
+mesa_dir =''
+eosDT_cache_dir      = './eosDT_cache'
+kap_cache_dir        = './kap_cache'
+rate_tables_dir      = './rate_tables'
+rates_cache_dir      = './rates_cache'
 
 ! messages and info
 echo_at_start = 'MESA model has begun running'
@@ -74,14 +74,14 @@ hard_limit_for_rel_error_in_energy_conservation = -1d0
 
 
 ! to stop at C depletion
-x_logical_ctrl(2) = .true.
+x_logical_ctrl(1) = .true.
 max_model_number = 50000 ! if true above, and the binary detaches, this will be overwritten in run_star_extras.f90
 redo_limit = 300
 
 
 ! atmosphere
 ! 1 for isotropic radiation field, and 1.5 for radial radiation field?
-Pextra_factor = 1.5 ! <= 1.5 to stay physical 
+Pextra_factor = 1.5 ! <= 1.5 to stay physical
 atm_option = 'T_tau'
 atm_T_tau_relation = 'Eddington'
 atm_T_tau_opacity = 'fixed' ! next best is 'iterated'
@@ -92,13 +92,13 @@ cool_wind_RGB_scheme = 'Dutch'
 cool_wind_AGB_scheme = 'Dutch'
 Dutch_scaling_factor = 1.0  ! this is LARGE
 mdot_omega_power = 0.43d0
-max_tries_for_implicit_wind = 10 !0 ! Recommend 10 for a production run     
+max_tries_for_implicit_wind = 10 !0 ! Recommend 10 for a production run
 max_T_center_for_any_mass_loss = 1.1d9
 
 
-      ! If you would like to be bold, try radiative damping, although it
-      ! is a departure from the mlt limit of 'TDC'
-      alpha_TDC_DAMPR = 0d0 ! 0d0 is default for mlt limit
+! If you would like to be bold, try radiative damping, although it
+! is a departure from the mlt limit of 'TDC'
+alpha_TDC_DAMPR = 0d0 ! 0d0 is default for mlt limit
 
 ! mlt ++
 use_superad_reduction = .true.
@@ -137,7 +137,7 @@ overshoot_f0(1) = 0.008d0
 ! overshoot_f0(1) = 0.01d0
 
 ! from inlist_massive_defaults -------------------------------------
-dX_nuc_drop_limit = 1d-2 
+dX_nuc_drop_limit = 1d-2
 dX_nuc_drop_limit_at_high_T = 2d-2 !5d-3 ! for center logT > 9.45
 dX_nuc_drop_min_X_limit = 1d-4 !1d-3 ! try decreasing to 1d-4 or 1d-5 in a production run
 dX_nuc_drop_max_A_limit = 70   ! try increasing beyond 60 in a big network run
@@ -182,8 +182,8 @@ max_dq = 5d-3!1d-3 ! uncomment in a full run.
 max_allowed_nz = 50000
 mesh_delta_coeff = 1.5d0
 mesh_delta_coeff_for_highT = 1.5d0 !1.5 ! try 1.0 or below in production run
-logT_max_for_standard_mesh_delta_coeff = 9.0 
-logT_min_for_highT_mesh_delta_coeff = 9.5 
+logT_max_for_standard_mesh_delta_coeff = 9.0
+logT_min_for_highT_mesh_delta_coeff = 9.5
 
 star_history_dbl_format = '(1pes32.16e3, 1x)'
 star_history_int_format = '(i32, 1x)'
@@ -223,18 +223,18 @@ delta_lgTeff_limit = 0.008d0
 delta_lgTeff_hard_limit = 0.01d0
 
 
-! Recommend decreasing all three Rho, T, Tmax 
+! Recommend decreasing all three Rho, T, Tmax
 ! to 1d-3 or lower in production runs
 delta_lgRho_cntr_limit = 2.5d-3 !0.03 ! 1d-3
 delta_lgRho_cntr_hard_limit = 0.1
-delta_lgRho_limit = 0.1 
-      
+delta_lgRho_limit = 0.1
+
 delta_lgT_cntr_limit_only_after_near_zams = .true.
 delta_lgT_cntr_limit = 2d-3 !0.002  ! 1d-3
-delta_lgT_cntr_hard_limit = 0.1 
+delta_lgT_cntr_hard_limit = 0.1
 
 delta_lgT_max_limit_only_after_near_zams = .true.
-delta_lgT_max_limit = 2d-3 !0.002   ! 1d-3  
+delta_lgT_max_limit = 2d-3 !0.002   ! 1d-3
 delta_lgT_max_hard_limit = 0.1
 
 delta_lgT_limit = 0.025d0         ! default 0.5
@@ -258,10 +258,8 @@ delta_lgL_H_hard_limit = 0.025d0
 set_min_D_mix = .true.
 min_D_mix=1d-2
 
-
-
 ! solver controls
-use_gold2_tolerances = .true. 
+use_gold2_tolerances = .true.
 gold2_tol_max_residual2 = 5d-7
 gold2_tol_max_residual3 = 5d-4
 
@@ -275,7 +273,7 @@ gold_solver_iters_timestep_limit = 20
 iter_for_resid_tol2 = 10
 
 
-convergence_ignore_equL_residuals = .true. 
+convergence_ignore_equL_residuals = .true.
 make_gradr_sticky_in_solver_iters = .true.
 xa_scale = 1d-5
 iter_for_resid_tol2 = 10
@@ -283,12 +281,12 @@ iter_for_resid_tol2 = 10
 
 ! output
 
-       photo_interval         = 500 !1000
-       photo_digits           = 8
-       profile_interval       = 200 
-       max_num_profile_models = 400000
-       history_interval       = 1
-       write_header_frequency = 10
-       terminal_interval      = 10
+photo_interval         = 500 !1000
+! photo_digits           = 8
+profile_interval       = 100
+max_num_profile_models = 400000
+history_interval       = 1
+write_header_frequency = 1
+terminal_interval      = 1
 
 / ! end of controls namelist

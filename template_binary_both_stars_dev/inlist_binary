@@ -12,13 +12,14 @@ pgbinary_flag = .true.
 
 m1 = 15.0d0  ! donor mass in Msun
 m2 = 12.0d0 ! companion mass in Msun
-initial_period_in_days = 20.0d0
+initial_period_in_days = 3.0d0
 
 limit_retention_by_mdot_edd = .false. ! this is for BH secondaries
 mass_transfer_alpha = 0.0d0
 mass_transfer_beta = 0.0d0
 mass_transfer_delta = 0.0d0
 mass_transfer_gamma = 0.0d0
+use_radiation_corrected_transfer_rate = .false.
 
 mdot_scheme = "Kolb" ! !"Ritter" !
 initial_change_factor = 1.2d0
@@ -31,11 +32,11 @@ write_header_frequency = 100 !1
 history_interval = 1
 terminal_interval = 10
 
-do_tidal_sync = .true.
+do_tidal_sync = .false.
 do_j_accretion = .false. ! if .true. use A.3.3 of de Mink et al. 2013, ApJ, 764, 166
-! be 100% sure MB is always off
+! ! be 100% sure MB is always off
 do_jdot_mb = .false.
-do_jdot_missing_wind = .true.
+do_jdot_missing_wind = .false.
 
 ! ! timestep controls
 fm_limit = 1d-1
@@ -64,19 +65,19 @@ implicit_lambda = 0.4d0
 
 min_mdot_for_implicit = 1d-10
 
-sync_mode_1 = "Uniform"
-sync_type_1 = "Hut_rad"
-Ftid_1 = 1
-sync_mode_2 = "Uniform"
-sync_type_2 = "Hut_rad"
-Ftid_2 = 1
-do_initial_orbit_sync_1 = .true.
-do_initial_orbit_sync_2 = .true.
+! sync_mode_1 = "Uniform"
+! sync_type_1 = "Hut_rad"
+! Ftid_1 = 1
+! sync_mode_2 = "Uniform"
+! sync_type_2 = "Hut_rad"
+! Ftid_2 = 1
+! do_initial_orbit_sync_1 = .true.
+! do_initial_orbit_sync_2 = .true.
 
 accretor_overflow_terminate = 2d0
 
-photo_interval = 200
-photo_digits           = 8
+photo_interval = 100
+! photo_digits           = 8
 append_to_star_history = .false.
 
 

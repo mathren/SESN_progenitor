@@ -16,7 +16,7 @@ Orbit_win_width = 8
 
 Grid1_win_flag = .true.
 
-Grid1_win_width = 13
+Grid1_win_width = 17.5
 Grid1_win_aspect_ratio = 0.58
 
 Grid1_xleft = 0.0
@@ -78,7 +78,7 @@ History_panels1_title = ''
 History_panels1_num_panels = 2
 History_panels1_xaxis_name = 'model_number'
 History_panels1_yaxis_name(1) = 'rl_relative_overflow_1'
-History_panels1_other_yaxis_name(1) = 'rl_relative_overflow_2'
+History_panels1_other_yaxis_name(1) = 'lg_mstar_dot_2'!'rl_relative_overflow_2'
 History_panels1_yaxis_name(2) = 'period_days'
 History_panels1_other_yaxis_name(2) = 'lg_mtransfer_rate'
 History_panels1_other_ymin(2) = -10
@@ -96,7 +96,7 @@ Grid1_plot_pad_top(4) = 0.00
 Grid1_txt_scale_factor(4) = 0.4
 
 Grid1_file_flag = .true.
-Grid1_file_interval = 1
+Grid1_file_interval = 10
 Grid1_file_width = 27
 Grid1_file_aspect_ratio = -1
 / ! end of pgbinary namelist
