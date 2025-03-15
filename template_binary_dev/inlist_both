@@ -105,13 +105,16 @@ use_superad_reduction = .true.
 superad_reduction_diff_grads_limit = 1d-2 ! default is 1d-3
 
 ! mlt
-mixing_length_alpha = 1.5
 MLT_option = 'TDC'
+mixing_length_alpha = 1.5
+alpha_TDC_DAMPR = 3d0 ! radiative dissipation !0d0 is default for mlt limit of TDC. 3 ~ henyey
 
 ! mixing
 use_ledoux_criterion = .true.
 alpha_semiconvection = 1.0d0 !1.0d0
 thermohaline_coeff = 1.0d0 !1.0d0
+semiconvection_option = 'Langer_85 mixing; gradT = gradr'
+thermohaline_option = 'Kippenhahn'
 ! thermohaline_option = 'Brown_Garaud_Stellmach_13'
 
 ! drag to prevent the development of radial pulses.
@@ -119,14 +122,21 @@ use_drag_energy = .false.
 drag_coefficient = 0.9d0
 min_q_for_drag = 0.8d0
 
-! overshoot controls
+
+! overshoot controls , lowest (#) take priority
 overshoot_scheme(1) = 'exponential'
 overshoot_zone_type(1) = 'any'
 overshoot_zone_loc(1) = 'core'
 overshoot_bdy_loc(1) = 'any'
-! overwritten as a function of mass in run_star_extras.f90
 overshoot_f(1) = 4.15d-2
 overshoot_f0(1) = 0.008d0
+
+overshoot_scheme(2)                       = 'exponential'
+overshoot_zone_type(2)                    = 'any'
+overshoot_zone_loc(2)                     = 'any'
+overshoot_bdy_loc(2)                      = 'any'
+overshoot_f(2)                            = 0.005d0
+overshoot_f0(2)                           = 0.001d0
 
 ! Brott+11
 ! overshoot_scheme(1) = 'step'
