@@ -168,20 +168,13 @@ gradT_excess_f1 = 1d-4
 gradT_excess_f2 = 1d-2
 gradT_excess_lambda1 = -1d0 ! full on
 
-! overshoot controls , lowest (#) take priority
-overshoot_scheme(1) = 'exponential'
-overshoot_zone_type(1) = 'any'
-overshoot_zone_loc(1) = 'core'
-overshoot_bdy_loc(1) = 'any'
-overshoot_f(1) = 4.15d-2
-overshoot_f0(1) = 0.008d0
-
-overshoot_scheme(2)                       = 'exponential'
-overshoot_zone_type(2)                    = 'any'
-overshoot_zone_loc(2)                     = 'any'
-overshoot_bdy_loc(2)                      = 'any'
-overshoot_f(2)                            = 0.005d0
-overshoot_f0(2)                           = 0.001d0
+! overshooting, values from Brott+11
+overshoot_scheme(1)                       = 'exponential'
+overshoot_zone_type(1)                    = 'any'
+overshoot_zone_loc(1)                     = 'any'
+overshoot_bdy_loc(1)                      = 'any'
+overshoot_f(1)                            = 0.005d0
+overshoot_f0(1)                           = 0.001d0
 
 ! timesteps
 min_timestep_limit = 1d-20 !(seconds)
