@@ -11,7 +11,7 @@ show_log_description_at_start = .false.
       rate_tables_dir      = './rate_tables'
       rates_cache_dir      = './rates_cache'
 
-load_saved_model = .true.
+load_saved_model = .false.
 load_model_filename = 'donor_final.mod'
 
 save_model_when_terminate = .true.
