@@ -286,7 +286,7 @@ terminal_show_log_dt = .false.
 
 !max_model_number = 4000000 ! if you're serious
 
-photo_interval         = 200 !1000
+photo_interval         = 100000000 !1000
 photo_digits           = 8
 profile_interval       = 100
 max_num_profile_models = 400000

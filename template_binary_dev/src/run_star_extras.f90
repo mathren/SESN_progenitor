@@ -99,7 +99,7 @@ contains
     if (ierr /= 0) return
     extras_start_step = 0
 
-    if ((s% center_h1 < 1.0d-2) .and. (s% center_he4 < 1.0d-4) .and. (s% center_c12 < 2.0d-2)) then
+    if ((s% center_h1 < 1.0d-2) .and. (s% center_he4 < 1.0d-4 .or. s% log_center_temperature >= 9.3d0 ) .and. (s% center_c12 < 2.0d-2)) then
        if(s% x_logical_ctrl(1) .and. s% lxtra(11)) then !check for central carbon depletion, only in case we run single stars.
           print *,  "*** Single star depleted carbon ***"
           print *, "read inlist_to_CC"

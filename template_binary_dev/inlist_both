@@ -293,7 +293,7 @@ iter_for_resid_tol2 = 10
 
 ! output
 
-       photo_interval         = 500 !1000
+       photo_interval         = 100000000 !1000
        photo_digits           = 8
        profile_interval       = 200 
        max_num_profile_models = 400000
