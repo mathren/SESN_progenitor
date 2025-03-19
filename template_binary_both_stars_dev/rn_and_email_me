@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# How to use: After compiling (`./clean && ./mk`), instead of using
+# `./rn`, use `./rn_and_email_me <your@email.edu>` - this will save
+# stderr *and* stdout to a file called `output.txt`, and email you the
+# last 50 lines of that file and the last png produced.
+
+
+
+
+{
+   rm -f .restart
+
+   date "+DATE: %Y-%m-%d%nTIME: %H:%M:%S"
+   ./binary
+   date "+DATE: %Y-%m-%d%nTIME: %H:%M:%S"
+} 2>&1 | tee output.txt
+
+# try to find last png
+png=$(find  -path "./png/*.png" -printf "%T@ %P\n" | sort -n | tail -1 | awk '{print $2}') ;
+if [ $? -eq 0 ]; then
+    # found png
+    tail -n 50 output.txt | mail -A $png -a "From:simulations@arizona.edu" -s "run done" $1
+else
+    # no png found
+    tail -n 50 output.txt | mail -a "From:simulations@arizona.edu" -s "run done" $1
+fi
