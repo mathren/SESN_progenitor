@@ -124,9 +124,10 @@ contains
 
     end if
 
-    ! we need to relax operator splitting minT after Si burning, to ease core-collapse.
+    ! we need to relax operator splitting minT after Si burning, to ease core-collapse. We also soften the surface BC by switching to        a hydrodynamic BC.
     if (s% log_center_temperature >= 9.5d0 .and. s% center_si28 <1d-3) then
       s% op_split_burn_min_T = 2.8d9
+      s% use_compression_outer_BC = .true.
     end if
 
   end function extras_start_step
