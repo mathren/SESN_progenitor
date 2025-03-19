@@ -85,7 +85,7 @@ redo_limit = 300
 
 ! atmosphere
 ! 1 for isotropic radiation field, and 1.5 for radial radiation field?
-Pextra_factor = 1.5 ! <= 1.5 to stay physical 
+Pextra_factor = 2 ! <= 1.5 to stay physical 
 atm_option = 'T_tau'
 atm_T_tau_relation = 'Eddington'
 atm_T_tau_opacity = 'fixed' ! next best is 'iterated'
