@@ -29,7 +29,6 @@ header[2] = profile[2].split()
 #get the number of zones (from the header)
 izones=header[1].index("num_zones")
 zones=int(header[2][izones]) #header[2] is a list, the second pair of brackets indicates which element of the list
-#print zones
 #get the total mass
 itotmass=header[1].index("star_mass")
 totalMass=float(header[2][itotmass])*msun
@@ -44,18 +43,18 @@ ineut=columnNames.index("neut") #index for column containing neutrons
 iprot=columnNames.index("h1") #index for column containing protons
 
 arr=np.loadtxt(path,skiprows=6)
-#print arr[:,imixing]
-for i in range(0,len(arr[:,imixing]),1): #start reading the the data 
-	if arr[i,imixing] == 0: arr[i,imixing] = 0 #no mixinguell
-	elif arr[i,imixing] == 1: arr[i,imixing] = 0 #convective mixing
-	elif arr[i,imixing] == 2: arr[i,imixing] = -1 #overshooting
-	elif arr[i,imixing] == 3: arr[i,imixing] = 0.5 #semiconvective
-	elif arr[i,imixing] == 4: arr[i,imixing] = 0 #thermohaline
-	elif arr[i,imixing] == 5: arr[i,imixing] = 0 #rotation mixing
-	elif arr[i,imixing] == 6: arr[i,imixing] = 0 #minimum mixing
-	else:
-		if arr[i,imixing] == 7.: arr[i,imixing] = 0 #anonymous mixing
-#print arr[:,imixing]
+
+for i in range(0,len(arr[:,imixing]),1): #start reading the the data
+    if arr[i,imixing] == 0: arr[i,imixing] = 0 #no mixinguell
+    elif arr[i,imixing] == 1: arr[i,imixing] = 0 #convective mixing
+    elif arr[i,imixing] == 2: arr[i,imixing] = -1 #overshooting
+    elif arr[i,imixing] == 3: arr[i,imixing] = 0.5 #semiconvective
+    elif arr[i,imixing] == 4: arr[i,imixing] = 0 #thermohaline
+    elif arr[i,imixing] == 5: arr[i,imixing] = 0 #rotation mixing
+    elif arr[i,imixing] == 6: arr[i,imixing] = 0 #minimum mixing
+    else:
+        if arr[i,imixing] == 7.: arr[i,imixing] = 0 #anonymous mixing
+
 
 isolist = []
 isolist.append(['he3', 'he4', 'h2', 'h3', 'li6', 'li7', 'li8', 'be7', 'be9', 'b8'])
@@ -92,21 +91,17 @@ for i in range(len(isolist)): # here we add mass fractions of the isotope groupi
     group = isolist[i]
     temp = []
     groupMassfracs = []
-#    print group
     for isotope in group:
         if isotope in columnNames :  #skip the isotopes MESA doesn't trace (as far as MESA is concerned, they are just not there)
-#            print isotope
             ind = int(columnNames.index(isotope))
-            groupMassfracs.append(arr[:,ind]) #at the end of the loop groupMassfracs 
-					  #is a matrix: every line is an isotope, every column a zone
+            groupMassfracs.append(arr[:,ind]) #at the end of the loop groupMassfracs
+                      #is a matrix: every line is an isotope, every column a zone
         groupArr = sp.array(groupMassfracs)   #cast it into numbers
-        TgroupArr = groupArr.T 		  #.T means transpose: we get a matrix in which each column is for an isotope and each row for a zone
-					  #we have a matrix for each group
-#    print 'groupMassfracs=',type(groupMassfracs), groupMassfracs, '\n groupArr=',type(groupArr), groupArr, '\n TgroupArr', TgroupArr
+        TgroupArr = groupArr.T           #.T means transpose: we get a matrix in which each column is for an isotope and each row for a zone
+    #we have a matrix for each group
     zonesum = []
-#    print group, TgroupArr  
     for j in range(0,zones):
-	zonesum.append(sum(TgroupArr[j,:]))
+        zonesum.append(sum(TgroupArr[j,:]))
         temp.append(zonesum[j]) #no need to normalize with MESA (judging from the output values orders of magnitude)
     massfracsShort.append(temp)
 
@@ -121,7 +116,6 @@ outfile.write('0.0d0 1.0d0 2.0d0 6.0d0 8.0d0 10.0d0 12.0d0 14.0d0 16.0d0 18.0d0 
 
 
 for i in range(zones,0,-1): #MESA stores the output in reverse order with respect to KEPLER
-#    print arr[i-1, columnNames.index("zone")]
     writeNewLine = "%15.6E" % (arr[i-1, imass]*msun) #mass in grams
     writeNewLine += "%15.6E" % (arr[i-1,iradius]*rsun) #radius in cm
     writeNewLine += "%15.6E" % (arr[i-1, ineut]) #abundance of neutrons as MESA gives it
@@ -129,7 +123,7 @@ for i in range(zones,0,-1): #MESA stores the output in reverse order with respec
 
     for newIso in massfracsShort:
         writeNewLine += "%15.6E" % (newIso[i-1]) #sum of the abundances of each element in the group
-					       #elements that I don't have in the output are just skipped	
+                           #elements that I don't have in the output are just skipped
     outfile.write(writeNewLine+'\n')
 
 
