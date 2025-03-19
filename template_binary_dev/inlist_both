@@ -70,6 +70,10 @@ use_Type2_opacities = .true.
 
 &controls
 
+! set approx22 fake factor to reproduce Ye ~ 0.43-0.44 at CC. 
+fe56ec_fake_factor = 1d-4
+min_T_for_fe56ec_fake_factor = 3d9
+
 hard_limit_for_rel_error_in_energy_conservation = -1d0
 
 
