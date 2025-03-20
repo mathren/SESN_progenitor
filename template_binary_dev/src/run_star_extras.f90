@@ -87,18 +87,16 @@ contains
 
 
   integer function extras_start_step(id)
-    use binary_def
     integer, intent(in) :: id
     integer :: ierr
     integer :: binary_id
     type (star_info), pointer :: s
-    type (binary_info), pointer :: b
     ierr = 0
-    call binary_ptr(binary_id, b, ierr)
     call star_ptr(id, s, ierr)
     if (ierr /= 0) return
     extras_start_step = 0
 
+   ! these two if statements below could be combined. -EbF
     if ((s% center_h1 < 1.0d-2) .and. &
         (s% center_he4 < 1.0d-4 .or. s% log_center_temperature >= 9.3d0) &
         .and. (s% center_c12 < 2.0d-2)) then
@@ -124,9 +122,8 @@ contains
 
     end if
 
-    ! we need to relax operator splitting minT after Si burning, to ease core-collapse. We also soften the surface BC by switching to        a hydrodynamic BC.
+    ! We can also soften the surface BC by switching to a hydrodynamic BC.
     if (s% log_center_temperature >= 9.5d0 .and. s% center_si28 <1d-3) then
-      s% op_split_burn_min_T = 2.8d9
       s% use_compression_outer_BC = .true.
     end if
 

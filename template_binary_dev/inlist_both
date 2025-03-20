@@ -15,10 +15,17 @@ show_retry_counts_when_terminate = .true.
 show_log_description_at_start = .false.
 show_timestep_limit_counts_when_terminate = .true.
 save_model_when_terminate = .false.
-load_saved_model = .false.
 
-! create_pre_main_sequence_model = .true.
+! initial model, ! we do not generate a pre_ms model here.
+create_pre_main_sequence_model = .false.
+load_saved_model = .false. ! if false either create pr-ms model or load zams model.
+!load_model_filename = 'zams.mod'
 
+! change initial Z but don't relax. 
+change_initial_Z = .true.
+new_Z = 0.02d0
+
+! network
 change_net = .true.
 change_initial_net = .true.
 new_net_name = 'approx21_cr60_plus_co56.net' ! "approx21_plus_co56.net" ! "mesa_128.net"
@@ -30,10 +37,6 @@ new_net_name = 'approx21_cr60_plus_co56.net' ! "approx21_plus_co56.net" ! "mesa_
 T9_weaklib_full_off = 0.0001d0
 T9_weaklib_full_on = 0.00011d0
 
-! change_rotation_flag = .true.
-! change_initial_rotation_flag = .true.
-! new_rotation_flag = .true.
-
 change_v_flag = .true.
 new_v_flag = .true.
 
@@ -43,13 +46,16 @@ initial_age = 0
 set_initial_model_number = .true.
 initial_model_number = 0
 
+! rotation
+! change_rotation_flag = .true.
+! change_initial_rotation_flag = .true.
+! new_rotation_flag = .true.
+
 ! set_omega_div_omega_crit = .true.
 ! set_initial_omega_div_omega_crit = .true.
+! new_omega_div_omega_crit = 0
 
 pgstar_flag = .true.
-
-change_initial_Z = .true.
-new_Z = 0.02d0
 
 ! value set in inlist_extra
 
@@ -62,8 +68,13 @@ new_Z = 0.02d0
 
 &kap
 
-Zbase = 0.02d0
+! MESA offers newer opacity tables for differing abundances, see kap controls.
+kap_file_prefix = 'gs98'    ! 'oplib_gs98' 
+kap_CO_prefix   = 'gs98_co' ! 'gs98_co'
+kap_lowT_prefix = 'lowT_fa05_gs98'
 use_Type2_opacities = .true.
+Zbase = 0.02
+
 ! Zbase set in inlist_extra
 /
 
@@ -99,11 +110,6 @@ mdot_omega_power = 0.43d0
 max_tries_for_implicit_wind = 10 !0 ! Recommend 10 for a production run     
 max_T_center_for_any_mass_loss = 1.1d9
 
-
-      ! If you would like to be bold, try radiative damping, although it
-      ! is a departure from the mlt limit of 'TDC'
-      alpha_TDC_DAMPR = 0d0 ! 0d0 is default for mlt limit
-
 ! mlt ++
 use_superad_reduction = .true.
 superad_reduction_diff_grads_limit = 1d-2 ! default is 1d-3
@@ -115,8 +121,8 @@ alpha_TDC_DAMPR = 3d0 ! radiative dissipation !0d0 is default for mlt limit of T
 
 ! mixing
 use_ledoux_criterion = .true.
-alpha_semiconvection = 1.0d0 !1.0d0
-thermohaline_coeff = 1.0d0 !1.0d0
+alpha_semiconvection = 1.0d0 
+thermohaline_coeff = 1.0d0 
 semiconvection_option = 'Langer_85 mixing; gradT = gradr'
 thermohaline_option = 'Kippenhahn'
 ! thermohaline_option = 'Brown_Garaud_Stellmach_13'
@@ -150,16 +156,17 @@ overshoot_f0(2)                           = 0.001d0
 ! overshoot_f(1) = 0.345d0
 ! overshoot_f0(1) = 0.01d0
 
-! from inlist_massive_defaults -------------------------------------
-dX_nuc_drop_limit = 1d-2 
-dX_nuc_drop_limit_at_high_T = 2d-2 !5d-3 ! for center logT > 9.45
+dX_nuc_drop_limit = 1d-2 ! 1d-3 for production
+dX_nuc_drop_limit_at_high_T = 2d-2 ! 1d-2 for production ! for center logT > 9.45
 dX_nuc_drop_min_X_limit = 1d-4 !1d-3 ! try decreasing to 1d-4 or 1d-5 in a production run
 dX_nuc_drop_max_A_limit = 70   ! try increasing beyond 60 in a big network run
 dX_nuc_drop_hard_limit = 1d99
 
 delta_Ye_highT_limit = 1d-3
-include_composition_in_eps_grav = .true.
 
+! The following controls below for rotation are untested in these inlists
+! but they should work in theory, if one turns them on and turns on rotation
+! in starjob.
 ! ! rotation and mixing:
 ! ! rotation is initialized by orbital synchronization
 ! am_nu_ST_factor = 1.0 !! 1.0 !default
@@ -188,23 +195,15 @@ include_composition_in_eps_grav = .true.
 ! implicit_mdot_boost = 0.1
 ! max_mdot_jump_for_rotation = 10d0
 
-
-
-
-! space
+! mesh
 max_dq = 5d-3!1d-3 ! uncomment in a full run.
 max_allowed_nz = 50000
-mesh_delta_coeff = 1.5d0
+mesh_delta_coeff = 1.5d0 ! 1.0 for a production.
 mesh_delta_coeff_for_highT = 1.5d0 !1.5 ! try 1.0 or below in production run
 logT_max_for_standard_mesh_delta_coeff = 9.0 
 logT_min_for_highT_mesh_delta_coeff = 9.5 
 
-star_history_dbl_format = '(1pes32.16e3, 1x)'
-star_history_int_format = '(i32, 1x)'
-star_history_txt_format = '(a32, 1x)'
-
-! resolution
-! time
+! timesteps
 time_delta_coeff = 1d0
 min_timestep_limit = 1e-20 !sec ! 1e-10 !to be able to reach CC
 varcontrol_target = 1d-3 !1d-4
