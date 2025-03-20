@@ -312,7 +312,7 @@ for i in range(
         )  # no need to normalize with MESA (judging from the output values orders of magnitude)
     massfracsShort.append(temp)
 
-# OTUPUT
+# OUTPUT
 outfile = open(pathout, "w")
 
 outfile.write(
@@ -327,10 +327,8 @@ outfile.write(
     "0.0d0 1.0d0 2.0d0 6.0d0 8.0d0 10.0d0 12.0d0 14.0d0 16.0d0 18.0d0 20.0d0 22.0d0 24.0d0 26.0d0 28.0d0 \n"
 )  # values of Z for each isotope
 
-
-for i in range(
-    zones, 0, -1
-):  # MESA stores the output in reverse order with respect to KEPLER
+# MESA stores the output in reverse order with respect to KEPLER
+for i in range(zones, 0, -1):
     writeNewLine = "%15.6E" % (arr[i - 1, imass] * msun)  # mass in grams
     writeNewLine += "%15.6E" % (arr[i - 1, iradius] * rsun)  # radius in cm
     writeNewLine += "%15.6E" % (
