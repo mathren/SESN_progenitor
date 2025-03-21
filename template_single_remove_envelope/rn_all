@@ -9,8 +9,8 @@ date "+DATE: %Y-%m-%d%nTIME: %H:%M:%S"
 do_one inlist_to_end_core_h_burn_header after_core_h_burn.mod  LOGS_h_burn
 do_one inlist_to_end_core_he_burn_header after_core_he_burn.mod LOGS_he_burn
 do_one inlist_remove_envelope_header removed_envelope.mod LOGS_remove
-do_one inlist_after_remove_envelope_header after_removed_envelope.mod LOGS_after_remove
-do_one inlist_to_cc_header CC.mod LOGS_cc
+#do_one inlist_after_remove_envelope_header after_removed_envelope.mod LOGS_after_remove
+#do_one inlist_to_cc_header CC.mod LOGS_cc
 
 date "+DATE: %Y-%m-%d%nTIME: %H:%M:%S"
 
