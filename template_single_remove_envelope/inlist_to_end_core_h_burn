@@ -9,6 +9,10 @@
 
       set_initial_model_number = .true.
       initial_model_number = 0
+
+      ! change initial Z but don't relax.
+      change_initial_Z                                = .true.
+      new_Z                                           = 0.02d0
       
       ! load_saved_model = .true.
       ! load_model_filename = 'zams.mod'

@@ -23,7 +23,7 @@
 &controls
 
       xa_central_lower_limit_species(1) = 'he4'
-      xa_central_lower_limit(1) = 1d-4
+      xa_central_lower_limit(1) = 1d-6
 
 / ! end of controls namelist
 
