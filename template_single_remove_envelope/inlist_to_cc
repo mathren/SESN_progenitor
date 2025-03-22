@@ -3,11 +3,11 @@
 
 &star_job
 
-load_saved_model = .true.
-load_model_filename = 'after_removed_envelope.mod'
+load_saved_model                                = .true.
+load_model_filename                             = 'after_removed_envelope.mod'
 
-save_model_when_terminate = .true.
-save_model_filename = 'CC.mod'
+save_model_when_terminate                       = .true.
+save_model_filename                             = 'CC.mod'
 
 !! You can change the nuclear reaction network from here this will
 !! only act after this inlist is read, that is at "C depletion"
