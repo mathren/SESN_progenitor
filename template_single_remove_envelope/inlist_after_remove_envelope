@@ -1,0 +1,47 @@
+&star_job
+
+show_log_description_at_start  = .false.
+
+load_saved_model               = .true.
+load_model_filename            = 'removed_envelope.mod'
+
+save_model_when_terminate      = .true.
+save_model_filename            = 'after_removed_envelope.mod'
+
+! AA                           => from make_pre_ccsn_13bvn
+write_profile_when_terminate   = .false.
+
+steps_to_take_before_terminate = 5 ! if nothing to do after remove
+
+! for Ib
+replace_element                = .true.
+!replace_initial_element       = .false.
+chem_name1                     = 'h1'
+chem_name2                     = 'he4'
+! replaces chem1 by chem2
+replace_element_nzlo           = -1
+replace_element_nzhi           = -1
+! <                            = AA
+
+/ ! end of star_job namelist
+
+&eos
+
+/ ! end of eos namelist
+
+&kap
+
+/ ! end of kap namelist
+
+&controls
+
+! prevent development of radial pulses during advanced burning
+drag_coefficient               = 1d0
+min_q_for_drag                 = 0.8d0
+
+/ ! end of controls namelist
+
+
+&pgstar
+
+/ ! end of pgstar namelist
