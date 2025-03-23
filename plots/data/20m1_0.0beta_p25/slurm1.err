@@ -1,0 +1,2 @@
+/scratch/ekfarag/nc_neutrinos/mesasdk/bin/ld: warning: pgbinary_orbit.o: requires executable stack (because the .note.GNU-stack section is executable)
+PGPLOT /xw: cannot connect to X server [localhost:13.0]
