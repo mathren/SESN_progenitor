@@ -87,19 +87,20 @@ contains
 
 
   integer function extras_start_step(id)
-    use binary_def
     integer, intent(in) :: id
     integer :: ierr
     integer :: binary_id
     type (star_info), pointer :: s
-    type (binary_info), pointer :: b
     ierr = 0
-    call binary_ptr(binary_id, b, ierr)
     call star_ptr(id, s, ierr)
     if (ierr /= 0) return
     extras_start_step = 0
 
-    if ((s% center_h1 < 1.0d-2) .and. (s% center_he4 < 1.0d-4) .and. (s% center_c12 < 2.0d-2)) then
+   ! these two if statements below could be combined. -EbF
+    if ((s% center_h1 < 1.0d-2) .and. &
+        (s% center_he4 < 1.0d-4 .or. s% log_center_temperature >= 9.3d0) &
+        .and. (s% center_c12 < 2.0d-2)) then
+
        if(s% x_logical_ctrl(1) .and. s% lxtra(11)) then !check for central carbon depletion, only in case we run single stars.
           print *,  "*** Single star depleted carbon ***"
           print *, "read inlist_to_CC"
@@ -110,9 +111,6 @@ contains
           end if
           print *, "read star_job from inlist_to_CC"
 
-    ! v_flag doesn't get set when reading the starjob
-    !  call star_set_v_flag(id,.true.,ierr)
-    !
           call star_read_controls(id, "inlist_to_cc", ierr)
           if (ierr /= 0) then
              print *, "Failed reading controls in inlist_to_CC"
@@ -122,22 +120,11 @@ contains
           s% lxtra(11) = .false. ! avoid re-entering here
        end if
 
-       !s% pg% Grid2_plot_name(4) = 'TRho' ! as opposed to 'History_Panels1'
-
-       !b% job% pgbinary_flag = .false.
-       !call read_pgstar_inlist(s,'inlist_pgstar_to_cc', ierr)
-
     end if
 
-    ! we need to relax operator splitting minT after Si burning, to ease core-collapse.
-    if (s% center_si28 <1d-3) then
-      !s% op_split_burn_min_T = 2.8d9
+    ! We can also soften the surface BC by switching to a hydrodynamic BC.
+    if (s% log_center_temperature >= 9.5d0 .and. s% center_si28 <1d-3) then
       s% use_compression_outer_BC = .true.
-      !s% use_momentum_outer_BC = .true. ! switch to momentum outer BC.
-      !s% drag_coefficient = 0d0
-      !s% min_q_for_drag = 0.8d0
-      !s% Pextra_factor = 1d0
-      !s% min_dq = 1d-10!1d-8 ! consider lowering resolution at surface
     end if
 
   end function extras_start_step
