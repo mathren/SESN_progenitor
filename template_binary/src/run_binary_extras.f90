@@ -377,6 +377,7 @@ contains
     type (binary_info), pointer :: b
     integer, intent(in) :: binary_id
     integer, intent(out) :: ierr
+    character (len=200) :: fname
     call binary_ptr(binary_id, b, ierr)
     if (ierr /= 0) then ! failure in  binary_ptr
        return
