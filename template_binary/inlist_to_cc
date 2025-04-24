@@ -59,7 +59,7 @@ Pvsc_zsh                                        = 0.1d0
 
 ! drag to prevent the development of radial pulses.
 use_drag_energy                                 = .false. ! means don't include energy from drag in energy equation
-drag_coefficient                                = 1.0d0
+drag_coefficient                                = 0.5d0
 min_q_for_drag                                  = 0.8d0
 
 ! wind

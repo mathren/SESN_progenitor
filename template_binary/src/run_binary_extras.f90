@@ -386,6 +386,8 @@ contains
     !behaving like becoming a point mass.. So for now it is assuming
     !it it is not a point mass, not sure if it works with compact
     !object binaries.
+    write(fname, fmt="(a19)") 'CC.mod'
+    call star_write_model(b% star_ids(1), fname, ierr)
     call star_write_profile_info(b% s1% id, "LOGS1/final_profile.data", ierr)
     if (ierr /= 0) then
        STOP "failed to save profile for star 1"
