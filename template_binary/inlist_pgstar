@@ -73,8 +73,8 @@ Kipp_mass_min = 0
 Kipp_show_mass_boundaries = .true.
 
 ! x axis limits
-Kipp_xmax = -101              ! maximum step number.  negative means use default.
-Kipp_xmin = 0         ! minimum step number.  negative means use default.
+Kipp_xmax = -101d0              ! maximum step number.  negative means use default.
+Kipp_xmin = -101d0         ! minimum step number.  negative means use default.
 Kipp_max_width = 2000         ! only used if > 0.  causes xmin to move with xmax.
 
 Kipp_show_mixing = .true.
