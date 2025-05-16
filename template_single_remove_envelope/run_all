@@ -1,0 +1,5 @@
+./rn_nomodfiles   inlist_to_end_core_h_burn_header
+./re_nomodfiles . inlist_to_end_core_he_burn_header
+./re_nomodfiles . inlist_remove_envelope_header
+./re_nomodfiles . inlist_after_remove_envelope_header
+./re_nomodfiles . inlist_to_cc_header

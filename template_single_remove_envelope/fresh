@@ -1,0 +1,7 @@
+#!/bin/bash
+rm -r LOGS*
+rm *.mod
+rm photos/*
+
+cd make
+make clean
