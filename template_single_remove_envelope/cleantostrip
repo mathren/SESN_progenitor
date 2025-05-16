@@ -1,8 +1,0 @@
-#!/bin/bash
-rm -r LOGS_c_burn
-rm -r LOGS_remove
-rm -r LOGS_refine
-rm after_core_c_burn.mod
-rm removed_envelope.mod
-rm refined.mod
-rm FIG_*
