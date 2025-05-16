@@ -1,1 +1,11 @@
 *cache*
+*.mod
+*.data
+__pycache__/*
+*.o
+*.a
+*.mp4
+*.smod
+
+*~
+*#*
