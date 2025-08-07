@@ -79,7 +79,4 @@ write_header_frequency       = 100     !1
 history_interval             = 1
 terminal_interval            = 10
 
-
-
-
 / ! end of binary_controls namelist

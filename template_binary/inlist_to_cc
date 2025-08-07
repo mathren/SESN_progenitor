@@ -196,5 +196,4 @@ terminal_show_log_dt                            = .false.
 /
 
 &pgstar
-
 / ! end of pgstar namelist
